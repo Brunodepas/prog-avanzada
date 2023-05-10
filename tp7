@@ -1,0 +1,103 @@
+1-
+	a-
+	(P->Q)V(Q->P)
+	={Def ->}
+	((P V Q) = Q) V (Q V P = P)
+	={Def Regla Dorada}
+	((P ^ Q)=P) V ((Q ^ P) = Q)
+	={Def Neutro}
+	((P ^ Q)=(P ^ TRUE)) V ((Q ^ P) = (Q ^ TRUE))
+	={Def ¬¬}
+	((!!(P ^ Q))=(!!(P ^ TRUE))) V ((!!(Q ^ P)) = (!!(Q ^ TRUE)))
+	={Def Morgan}
+	(!(!P V !Q) = !(!P V !TRUE)) V (!(!Q V !P) = !(!Q V !TRUE))
+	={Def False}
+	(!(!P V !Q) = !(!P V FALSE)) V (!(!Q V !P) = !(!Q V FALSE))
+	={Def Distr ¬}
+	!!((!P V !Q) = (!P V FALSE)) V !!((!Q V !P) = (!Q V FALSE))
+	={Def ¬¬}
+	((!P V !Q) = (!P V FALSE)) V ((!Q V !P) = (!Q V FALSE))
+	={Def F.C V}
+	!P V (!Q = FALSE) V !Q V (!P = FALSE)
+	={Def Distr ¬}
+	!P V !(Q = FALSE) V !Q V !(P = FALSE)
+	={Def Distr ¬}
+	!P V (Q = !FALSE) V !Q V (P = !FALSE)
+	={Def False}
+	!P V (Q = TRUE) V !Q V (P = TRUE)
+	={Def Neutro}
+	!P V Q V !Q V P
+	={Def Asoci Y Conmu}
+	(!P V P) V (!Q V Q)
+	={Def Tercero Excluido}
+	TRUE V TRUE
+	={Def V}
+	TRUE
+
+
+	b-
+	P -> Q = ¬P V Q
+	P -> Q
+	={def ->}
+	(P V Q) = Q
+	={R.Dorada}
+	(P ^ Q) = P
+	={Def ¬¬}
+	!!(P ^ Q) = P
+	={Def Morgan}
+	!(!P V !Q) = P
+	={Def Neutro}
+	!(!P V !Q) = (P ^ TRUE)
+	={Def Distr ¬}
+	(!P V !Q) = !(P ^ TRUE)
+	={Def Morgan}
+	(!P V !Q) = (!P V !TRUE)
+	={Def False}
+	(!P V !Q) = (!P V FALSE)
+	={Def F.C V}
+	!P V (!Q = FALSE)
+	={Def Distr ¬}
+	!P V !(Q = FALSE)
+	={Def Distr ¬}
+	!P V (Q = !FALSE)
+	={Def False}
+	!P V (Q = TRUE)
+	={Def Neutro}
+	!P V Q
+
+
+	c-
+	P V (P ^ Q) = P
+	P V (P ^ Q)
+	={R.Dorada}
+	P V (P=Q=P V Q)
+	={Distr.V}
+	P V P=P V Q= P V (P V Q)
+	={Idem Y Asoci V}
+	P=P V Q=P V Q
+	={Neutro}
+	P=TRUE
+	={Neutro}
+	P
+
+2-
+	1- A = A ^ ¬B
+	A = ¬(A -> B)
+	¬(A = (A -> B))
+	¬(A = A V B = B)
+	¬(A ^ B)
+	¬A V ¬B
+	A ES UN MENTIROSO O B ES UN MENTIROSO
+
+	2- A = ¬A ^ B
+	A = B ^ ¬A
+	A = ¬(B -> A)
+	¬(A = (B -> A))
+	¬(A = B V A = A)
+	¬(TRUE = B V A)
+	¬(B V A)
+	¬B ^ ¬A
+	B ES UN MENTIROSO Y A ES UN MENTIROSO
+
+	3- A = A ^ B
+	B = A V B
