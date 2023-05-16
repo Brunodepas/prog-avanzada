@@ -1,0 +1,42 @@
+--1
+--F1xs = <Vi:0<=i<#xs:xs.0=xs.i>
+--F2xs = <Vi:0<=i<#xs-1:xs.i=/xs.i+1>
+--F3xs = <Vi:0<=i<#xs-1:xs.i<xs.i+1>
+--F4xs = <Ei,j:0<=i<#xs && 0<=j<#xs:xs.i=1 && xs.j=0>
+--F5xs = <TTi:0<=i<#xs && esPrimo(xs.i):xs.i
+--2
+--F1xs = <mini:0<=i<#xs && xs.i:i>
+--n=min[xs.i|i<-[0..#xs],xs.i==True]
+--F2xs = <maxi:0<=i<#xs && xs.i:i>
+--n=max[xs.i|i<-[0..#xs],xs.i==True]
+--F3xs = <Vn:0<=n<#xs:xs.n>
+--foldr (==) True <V[xs.i|i<-[0..#xs]]>
+--3
+--F1xs = <Nx:0<=x<#xs:xs.x mod 2 = 0> == <Ny:0<=y<#xs:xs.y mod 2 =/ 0>
+--F2n = <Nx:1<=x<=n: n mod x==0> = 2
+--F3xsys = <Eas,bs,cs:as++bs++cs=xs:bs=ys>
+--F4xsys = <Eas,bs,cs:as++bs++cs=xs:cs=ys>
+--4
+--F1xs = <Min as,bs,cs:as++bs++cs=xs:sum(bs)>
+--F2xs = <Max as,bs,cs:as++bs++cs=xs && <Vi:0<=i<#xs:xs.0=xs.i>:#bs>
+--F3xs = <Max as,bs,cs:as++bs++cs=xs && <Vi:0<=i<#xs-1:xs.i /= xs.i+1>:#bs>
+--5
+--TT[xs!!i | i <- [0..length xs-1],primo(xs!!i)]
+--or[ys==bs| (as,bs,cs) <- split3 xs]
+--or[ys==cs| (as,cs) <- split2 xs]
+--Max[sum bs | (as,bs,cs) <- split3 xs]
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
