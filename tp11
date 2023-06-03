@@ -1,0 +1,264 @@
+1.[{wp}.S.False = False
+2.[{wp}.S.{Q} ^ {wp}.S.R = {wp}.S.{Q ^ R}
+3.[{wp}.S.{Q} V {wp}.S.R = {wp}.S.{Q V R}
+4.[{wp}.skip.{Q} = {Q}
+5.[{wp}.(x:=E).{Q} = {Q}(x:=E)
+6.[{wp}.S;T.{Q} = {wp}.S.({wp}.T.{Q})
+para demostrar if:
+	1-[P-> B0 V ... V BN]
+	2-[P ^ Bi -> wp.Si.Q]
+para demostrar do:
+	Inicializacion:{P}S{I}
+	Postcondicion:I ^ ¬B0 ^ ... ^ ¬Bn -> Q
+	Invariante:{Bi ^ I}Si{I}
+	Variante a:I ^ Bi -> v >= 0
+	Variante b:{I ^ Bi ^ v = A}Si{v < A}
+
+
+
+1-
+	{wp} x := (x − y) ∗ (x + y) {(x + y^2 = 0)}
+	={asignacion}
+	((x - y) * (x + y) + y^2 = 0)
+	={dif cuadrado}
+	(x^2 - y^2 + y^2 = 0)
+	={aritmetica}
+	(x^2 = 0)
+	={despejar x}
+	(x=0)
+
+	{wp}q, r := q + 1, r − y{q ∗ y + r = x}
+	={asignacion}
+	(q + 1) ∗ y + r - y = x
+	={aritmetica}
+	yq + y +r -y = x
+	={aritmetica}
+	yq + r = x
+
+	{wp}
+		a := a ≡ b;
+		b := a ≡ b;
+		a := a ≡ b;
+		{ (a≡ B) ∧ (b≡ A) }
+	={asignacion a}
+	{wp} a := a ≡ b {((a ≡ (b))≡ B) ∧ (b≡ A)}
+	={asignacion b}
+	{wp} b := a ≡ b {((a ≡ (a ≡ b))≡ B) ∧ ((a ≡ b)≡ A)}
+	={asignacion a}
+	(((a ≡ b) ≡ ((a ≡ b) ≡ b))≡ B) ∧ (((a ≡ b) ≡ b)≡ A)
+	={def neutro ≡}
+	(b≡ B) ∧ (a≡ A)
+
+
+2-
+	{A = q ∗ B + r} q := E; r := r − B {A = q ∗ B + r}
+
+
+	={def wp}
+	wp. r := r − B . A = q ∗ B + r
+	={sust r,def wp}
+	wp.q := E. A = q ∗ B + r − B
+	={sust q}
+	A = E ∗ B + r − B
+	={sust precond}
+	q ∗ B + r = E ∗ B + r − B
+	={aritmetica}
+	E=q+1
+
+	{x ∗ y + p ∗ q = N} x := x − p; q := E {x ∗ y + p ∗ q = N}
+	={def wp}
+	wp. q := E . x ∗ y + p ∗ q = N
+	={sust q,def wp}
+	wp. x := x − p . x ∗ y + p ∗ E = N
+	={sust x}
+	(x − p) ∗ y + p ∗ E = N
+	={aritmetica}
+	xy - py + pE = N
+	={sust precond}
+	xy - py + pE = xy + pq
+	={despejo E}
+	E= q + y
+
+
+3-
+	{x = A ∧ y = B}
+		x := x - y;
+		y := x + y;
+		x := y - x;
+	{x = B ∧ y = A}
+	={def wp}
+	wp. x := y - x . x = B ∧ y = A
+	={sust x,def wp}
+	wp. y := x + y . y - x = B ∧ y = A
+	={sust y,def wp}
+	wp. x := x - y . x + y - x = B ∧ x + y = A
+	={sust x}
+	x - y + y - (x - y) = B ∧ x - y + y = A
+	={aritmetica}
+	y=B ^ x=A
+
+
+4-	
+	a-
+		{True}
+		if 
+			x >= y -> skip
+			[] x <= y -> x,y := y,x
+		fi
+		{x >= y}
+
+		1-True -> x >= y V x <= y
+			={Rango unitario}
+		True -> x=y
+		True
+		2-
+		True ^ x >= y -> wp.skip.{x >= y}
+			={logica}
+		x >= y -> wp.skip.{x >= y}
+			={wp.skip.{Q}=Q}
+		x >= y ->	x >= y
+			={logica}
+		True
+		True ^ x <= y -> wp.x,y := y,x.{x >= y}
+			={logica}
+		x <= y -> wp.x,y := y,x.{x >= y}
+			={def wp}
+		x <= y -> y >= x
+			={logica}
+		True
+
+
+	b-
+		{True}
+		if 
+			¬a v b -> a := ¬a
+			[] a v ¬b -> b := ¬b
+		fi
+		{a ∨ b}
+		1-True-> ¬a v b v a v ¬b
+			={asos V}
+		True-> (¬a v a) v (b v ¬b)
+			={tercero excluido}
+		True-> True v True
+			={idempotencia}
+		True -> True
+		True
+		2-True ^ ¬a v b -> wp.a := ¬a.{a ∨ b}
+			={Logica}
+		¬a v b -> wp.a := ¬a.{a ∨ b}
+			={def wp}
+		¬a v b -> ¬a ∨ b
+			={Logica}
+		True
+		True ^ a v ¬b -> wp.b := ¬b.{a ∨ b}
+			={Logica}
+		a v ¬b -> wp.b := ¬b.{a ∨ b}
+			={def wp}
+		a v ¬b -> a ∨ ¬b
+			={Logica}
+		True
+
+
+	c-
+		{True}
+		if 
+			¬a v b -> a := ¬a
+			[] a v ¬b -> b := ¬b
+		fi
+		{a ∨ b}
+
+		1-True-> ¬a v b v a v ¬b
+			={asos V}
+		True-> (¬a v a) v (b v ¬b)
+			={tercero excluido}
+		True-> True v True
+			={idempotencia}
+		True -> True
+		True
+
+		2-True ^ ¬a v b -> wp.a := ¬a.{a ∨ b}
+			={Logica}
+		¬a v b -> wp.a := ¬a.{a ∨ b}
+			={def wp}
+		¬a v b -> ¬a ∨ b
+			={Logica}
+		True
+		True ^ a v ¬b -> wp.b := ¬b.{a ∨ b}
+			={Logica}
+		a v ¬b -> wp.b := ¬b.{a ∨ b}
+			={def wp}
+		a v ¬b -> a ∨ ¬b
+			={Logica}
+		True
+
+
+	d-
+		{N ≥ 0}
+		x := 0
+		do x <> N -> x := x + 1
+		od
+		{x = N}
+
+		{I:x=N}
+
+		{V:N-x}
+
+		Ini:{N ≥ 0}x := 0{x = N}
+			={def wp}
+		N ≥ 0 -> wp.x := 0.{x = N}
+			={def wp}
+		N ≥ 0 -> 0 = N
+			={Logica}
+		True
+
+		Pos:x=N ^ ¬(x <> N)-> x = N
+			={Logica}
+		x=N ^ x = N-> x = N
+			={Logica}
+		True
+
+		Inv:{x <> N ^ x=N}x := x + 1{x=N}
+			={def wp}
+		x <> N ^ x=N -> wp.x := x + 1{x=N}
+			={def wp}
+		x <> N ^ x=N -> x + 1=N
+			={Logica}
+		False -> x + 1=N
+			={False -> q = True}
+		True
+
+		Var a:x=N ^ x <> N -> N-x >= 0
+			={Logica}
+		False-> N-x >= 0
+			={False -> q = True}
+		True
+
+
+		Var b:{x=N ^ x <> N ^ N-x = A}x := x + 1{N-x < A}
+			={def wp}
+		x=N ^ x <> N ^ N-x = A -> wp.x := x + 1.{N-x < A}
+			={def wp}
+		x=N ^ x <> N ^ N-x = A -> N-(x + 1) < A
+			={aritmetica}
+		x=N ^ x <> N ^ N-x = A -> N - x - 1 < A
+			={Leibniz}
+		x=N ^ x <> N ^ N-x = A -> A - 1 < A
+			={Logica}
+		x=N ^ x <> N ^ N-x = A -> True
+			={p->True = True}
+		True
+
+
+
+
+5-
+	con N : Nat
+	var n : Nat; r : Bool
+	var A: array array:[0..N) of Nat
+	{N > 0}
+	n,r := 0, True
+	{r = <∀i : 0 ≤ i < n : A.i = A.(N − i − 1) ∧ 0 ≤ n ≤ N>}
+	do n <> N
+		n,r := n + 1, r ^ A.n = A.(N - n -1)
+	od
+	{r = <∀i : 0 ≤ i < N : A.i = A.(N − i − 1)>}

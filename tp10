@@ -1,0 +1,375 @@
+1-
+	(xs ++ ys) ++ zs = xs ++ (ys ++ zs)
+
+	def ++
+	CB = [] ++ ys = ys
+	HI = (x:xs) ++ ys = x:(xs ++ ys)
+
+	CB xs=[]			
+	([] ++ ys) ++ zs		|	[] ++ (ys ++ zs)
+	={def ++}				|	={def ++}
+	ys ++ zs				|	ys ++ zs
+						True
+	CI xs = (x:xs)
+	((x:xs) ++ ys) ++ zs	|	(x:xs) ++ (ys ++ zs)
+	={def ++}				|	={def ++}
+	x:(xs ++ ys) ++ zs		|	x:(xs ++ (ys ++ zs))
+							|	={def HI}
+							|	x:(xs ++ ys) ++ zs
+							True
+
+
+2-	
+	def fog .xs = f[g.xs]
+	def map
+	CB = f [] = []
+	HI = f.(x:xs) = f.x : map f.xs
+
+	map(f o g)xs = (map f) o (map g) xs
+
+	CB xs = []
+	map(f o g)[]		|	(map f) o (map g) []
+	={def map}			|	={def fog}
+	[]					|	map f[map g []]
+						|	={def map}
+						|	map f[]
+						|	={def map}
+						|	[]
+						True
+	CI xs=(x:xs)
+	map(f o g)(x:xs)	|	(map f) o (map g) (x:xs)
+	={def map}			|	={def fog}
+	(f o g)x:map(f o g) xs 	|	map f [map g (x:xs)]
+	={def fog}			|	={def map}
+	f[g.x] : map(f o g) xs 	|	map f [g.x : map g xs]
+						|	={def map}
+						|	f[g.x]: map f [map g xs]
+						|	={def fog}
+						|	f[g.x]: (map f) o (map g) xs
+						|	={HI}
+						|	f[g.x]: map(f o g) xs
+						True
+	def reversa
+	CB = [] = []
+	HI = (x:xs) = (reversa xs) ++ [x]
+
+	reversa (xs ++ ys) = reversa ys ++ reversa xs
+
+	CB xs = []
+	reversa ([] ++ ys)		|	reversa ys ++ reversa []
+	={def ++}				|	={def reversa}
+	reversa ys				|	reversa ys ++ []
+							|	={def ++}
+							|	reversa ys
+							True
+	CI xs = (x:xs)
+	reversa ((x:xs) ++ ys)	|	reversa ys ++ reversa (x:xs)
+	={def ++}				|	={def reversa}
+	reversa (x:(xs ++ ys))	|	reversa ys ++ (reversa xs ++ [x])
+	={def reversa}			|	={prop ej1}
+	reversa (xs ++ ys) ++ [x]|	(reversa ys ++ reversa xs) ++ [x]
+							|	={HI}
+							|	reversa (xs ++ ys) ++ [x]
+							True
+
+	reversa(reversa xs) = xs
+
+	CB xs = []
+	reversa(reversa [])		|	[]
+	={def reversa}
+	reversa []
+	={def reversa}
+	[]
+							True
+	CI xs = (x:xs)
+	reversa(reversa (x:xs))	|	(x:xs)
+	={def reversa}
+	reversa(reversa xs ++ [x])
+	{prop ej2}
+	reversa [x] ++ reversa(reversa xs)
+	={def reversa}
+	[x] ++ reversa(reversa xs)
+	={HI}
+	[x] ++ xs
+	={def ++}
+	(x:xs)
+	True
+
+
+3-
+	fxs = <Vi: 0<=i<#xs : xs.0=xs.i>
+
+	CB xs = []
+	<Vi: 0<=i<#[] : [].0=[].i>
+	={def #}
+	<Vi: 0<=i<0 : [].0=[].i>
+	={def Rango vacio}
+	True
+
+	CI xs = (x:xs)
+	<Vi: 0<=i<#(x:xs) : (x:xs).0=(x:xs).i>
+	={def lista,#}
+	<Vi: 0<=i<1+#xs : (x:xs).0=(x:xs).i>
+	={Part.rango}
+	<Vi: 0<=i<1 : (x:xs).0=(x:xs).i> ^ <Vi: 1<=i<1+#xs : (x:xs).0=(x:xs).i>
+	={Rango Unitario,def Index}
+	True ^ <Vi: 1<=i<1+#xs : (x:xs).0=(x:xs).i>
+	<Vi: 1<=i<1+#xs : (x:xs).0=(x:xs).i>
+	={i=j + 1}
+	<Vj: 1<=j+1<1+#xs : (x:xs).0=(x:xs).j+1>
+	={se resta 1}
+	<Vj: 0<=j<#xs : (x:xs).0=(x:xs).j+1>
+	={def index}
+	<Vj: 0<=j<#xs : x=(x:xs).j+1>
+	={def index y rango de j}
+	<Vj: 0<=j<#xs : x=xs.j>
+
+	modularizo :defino g xs = <Vi : 0<=i<#xs : k = xs.i>
+	CB xs = []
+	<Vi : 0<=i<#[] : k = [].i>
+	={def #}
+	<Vi : 0<=i<0 : k = [].i>
+	={def Rango vacio}
+	True
+
+	CI xs = (x:xs)
+	<Vi : 0<=i<#(x:xs) : k = (x:xs).i>
+	={def lista,#}
+	<Vi : 0<=i<1+#xs : k = (x:xs).i>
+	={Part.rango}
+	<Vi : 0<=i<1 : k = (x:xs).i> ^ <Vi : 1<=i<1+#xs : k = (x:xs).i>
+	={Rango Unitario,def Index}
+	k = x ^ <Vi : 1<=i<1+#xs : k = (x:xs).i>
+	={i=j + 1}
+	k = x ^ <Vj : 1<=j+1<1+#xs : k = (x:xs).j+1>
+	={se resta 1}
+	k = x ^ <Vj : 0<=j<#xs : k = (x:xs).j+1>
+	={def index y rango de j}
+	k = x ^ <Vj : 0<=j<#xs : k = xs.j>
+	={i=j}
+	k = x ^ <Vi : 0<=i<#xs : k = xs.i>
+	={HI}
+	k = x ^ g xs
+
+	g :: [a] -> a -> Bool
+	g [] k = True
+	g (x:xs) k = k = x ^ g xs k
+
+	volvemos a f xs
+
+	<Vj: 0<=j<#xs : x=xs.j>
+	={def g}
+	g xs x
+
+	f :: [a] -> Bool
+	f [] = True
+	f (x:xs) = g xs x
+
+
+4-
+	f xs = <TT i : 0<= i < #xs : xs.i>
+	CB xs=[]
+	<TT i : 0<= i < #[] : [].i>
+	={def #}
+	<TT i 0 <= i < 0 : []i>
+	={Rango Vacio}
+	1
+	CI xs=(x:xs)
+	<TT i : 0<= i < #(x:xs) : (x:xs).i>
+	={def lista,#}
+	<TT i : 0<= i < 1+#xs : (x:xs).i>
+	={Particion de Rango}
+	<TT i : 0<= i < 1 : (x:xs).i> * <TT i : 1<= i < 1+#xs : (x:xs).i>
+	={Rango Unitario i=0,def index}
+	x * <TT i : 1<= i < 1+#xs : (x:xs).i>
+	={i=i + 1}
+	x * <TT i : 1<= i+1 < 1+#xs : (x:xs).i+1>
+	={se resta 1}
+	x * <TT i : 0<= i < #xs : (x:xs).i+1>
+	={def index(se va el x y el 1)}
+	x * <TT i : 0<= i < #xs : xs.i>
+	={HI}
+	x * f xs
+
+
+	f :: [Num] -> Num
+	f [] = 1
+	f (x:xs) = x * f xs
+
+
+5-
+	h xs = <Vi : 0<= i <#xs-1 : xs.i<xs.i+1>
+	CB xs = []
+	<Vi : 0<= i <#[]-1 : [].i<[].i+1>
+	={def #}
+	<Vi : 0<= i <-1 : [].i<[].i+1>
+	={def Rango Vacio}
+	True
+	CI xs = (x:xs)
+	<Vi : 0<= i <#(x:xs)-1 : (x:xs).i<(x:xs).i+1>
+	={def lista,#,aritmetica}
+	<Vi : 0<= i <#xs : (x:xs).i<(x:xs).i+1>
+	={Particion de Rango}
+	<Vi : 0<= i <1 : (x:xs).i<(x:xs).i+1> ^ <Vi : 1<= i <#xs : (x:xs).i<(x:xs).i+1>
+	={Rango Unitario i=0,def index}
+	x<(x:xs).1 ^ <Vi : 1<= i <#xs : (x:xs).i<(x:xs).i+1>
+	={i=j+1}
+	x<(x:xs).1 ^ <Vj : 1<= j+1 <#xs : (x:xs).j+1<(x:xs).j+2>
+	={resto 1}
+	x<(x:xs).1 ^ <Vj : 0<= j <#xs-1 : (x:xs).j+1<(x:xs).j+2>
+	={def index y rango de j}
+	x<(x:xs).1 ^ <Vj : 0<= j <#xs-1 : xs.j<xs.j+1>
+	={i=j}
+	x<(x:xs).1 ^ <Vi : 0<= i <#xs-1 : xs.i<xs.i+1>
+	={HI}
+	x<(x:xs).1 ^ h xs
+
+	h :: [a] -> Bool
+	h [] = True
+	h (x:xs) = x<(x:xs).1 ^ h xs
+
+
+6-
+	m xs = <Min i : 0<=i<#xs : xs.i>
+	CB xs = []
+	<Min i : 0<=i<#[] : [].i>
+	={def #}
+	<Min i : 0<=i<0 : [].i>
+	={def Rango vacio}
+	+inf
+	CI xs = (x:xs)
+	<Min i : 0<=i<#(x:xs) : (x:xs).i>
+	={def lista,#}
+	<Min i : 0<=i<1+#xs : (x:xs).i>
+	={def particion de rango}
+	min (<Min i : 0<=i<1 : (x:xs).i> <Min i : 1<=i<1+#xs : (x:xs).i>)
+	={Rango Unitario i=0,def index}
+	min (x <Min i : 1<=i<1+#xs : (x:xs).i>)
+	={i=j+1}
+	min (x <Min j : 1<=j+1<1+#xs : (x:xs).j+1>)
+	={resto 1}
+	min (x <Min j : 0<=j<#xs : (x:xs).j+1>)
+	={def index y rango de j}
+	min (x <Min j : 0<=j<#xs : xs.j>)
+	={HI}
+	min (x  mxs)
+
+	m :: [num] -> num
+	m [] = +inf
+	m (x:xs) = min (x mxs)
+
+
+7-
+	f xs = <Ei : 0<=i<#xs : xs.i = <Sj : i<j<#xs : xs.j>>
+	CB xs = []
+	<Ei : 0<=i<#[] : [].i = <Sj : i<j<#[] : [].j>>
+	={def #}
+	<Ei : 0<=i<0 : [].i = <Sj : i<j<#[] : [].j>>
+	={def rango vacio}
+	False
+	CI xs = (x:xs)
+	<Ei : 0<=i<#(x:xs) : (x:xs).i = <Sj : i<j<#(x:xs) : (x:xs).j>>
+	={def lista , def #}
+	<Ei : 0<=i<1+#xs : (x:xs).i = <Sj : i<j<1+#xs : (x:xs).j>>
+	={def part.rango}
+	<Ei : 0<=i<1 : (x:xs).i = <Sj : i<j<1+#xs : (x:xs).j>> v <Ei : 1<=i<1+#xs : (x:xs).i = <Sj : i<j<1+#xs : (x:xs).j>>
+
+	<Ei : 0<=i<1 : (x:xs).i = <Sj : i<j<1+#xs : (x:xs).j>>
+	={Rango Unitario i=0,def index}
+	x
+
+
+9-
+	P xs.ys = (Eas, bs :: ys = as ++ xs ++ bs)
+	CB xs = []
+	Eas, bs :: ys = as ++ [] ++ bs
+	={def ++}
+	Eas, bs :: ys = as ++ bs
+	={Particion de rango as=[] v as=(a:as)}
+	Eas, bs : as=[] : ys = as ++ bs v Eas, bs : as=(a:as) : ys = as ++ bs
+
+	Eas, bs : as=[] : ys = as ++ bs
+	={rango unitario}
+	Eas, bs :: ys = [] ++ bs
+	={def ++}
+	Eas, bs :: ys = bs
+	={intercambio}
+	Eas, bs :ys=bs: true
+	={rango unitario}
+	True
+
+	True v Eas, bs : as=(a:as) : ys = as ++ bs
+	True
+	CI xs=(x:xs) ys=(y.ys)
+	Eas, bs :: (y:ys) = as ++ (x:xs) ++ bs
+	={Particion de rango as = [] v as = (a:as)}
+	Ebs :: (y:ys) = [] ++ (x:xs) ++ bs
+				v
+	Eas, bs :: (y:ys) = (a:as) ++ (x:xs) ++ bs
+
+	Ebs :: (y:ys) = [] ++ (x:xs) ++ bs
+	={def ++}
+	Ebs :: (y:ys) = (x:xs) ++ bs
+	={igualdad de lista}
+	y = x ^ Ebs :: ys = xs ++ bs
+
+	modularizamos Ebs :: ys = xs ++ bs
+
+	g xs ys =Ebs :: ys = xs ++ bs
+	CB xs=[]
+	Ebs :: ys = [] ++ bs
+	={def ++}
+	Ebs :: ys =  bs
+	={intercambio}
+	Ebs :ys = bs: True
+	True
+	CI xs= (x:xs) ys = (y:ys)
+	Ebs :: (y:ys) = (x:xs) ++ bs
+	={igualdad de listas,distributiva del ^ con el v}
+	y=x ^ Ebs :: ys = xs ++ bs
+	={HI}
+	y=x ^ g xs ys
+
+	volvemos a y = x ^ Ebs :: ys = xs ++ bs
+
+	y = x ^ Ebs :: ys = xs ++ bs
+	={def g}
+	y=x ^ g xs ys
+
+	Eas, bs :: (y:ys) = (a:as) ++ (x:xs) ++ bs
+	={Igualdad de listas}
+	Eas, bs :: y=a ^ ys = as ++ (x:xs) ++ bs
+	={sacamos el x porque no se usa}
+	Eas, bs :: y=a ^ ys = as ++ xs ++ bs
+	={intercambio}
+	Eas, bs : y=a :ys = as ++ xs ++ bs
+	={rango Unitario}
+	Eas, bs ::ys = as ++ xs ++ bs
+	={HI}
+	P xs ys
+
+	y=x ^ g xs ys v P xs ys
+
+
+10-
+	sumatoria / contatoria
+	<Si:0<=i<#xs:xs.i>	/	<Ci:0<=i<#xs:True>
+
+	h xs = (sumatoria xs , contatoria xs)
+	CB xs = [x]
+	(sumatoria xs , contatoria xs)
+	={def sumatoria y contatoria}
+	(x,1)
+	CI xs = (x:xs)
+	(sumatoria (x:xs) , contatoria (x:xs))
+	={def sum y cont}
+	(x + sumatoria xs , 1 + contatoria xs)
+	={reemplazo}
+	(x + a , 1 + b)
+	[(a,b)=(sumatoria xs , contatoria xs)]
+	={HI}
+	(x + a , 1 + b)
+	[(a,b)=hxs]
+
+	prom xs = a / b
+		where [(a,b)= hxs]
