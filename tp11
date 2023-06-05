@@ -1,9 +1,9 @@
 1.[{wp}.S.False = False
 2.[{wp}.S.{Q} ^ {wp}.S.R = {wp}.S.{Q ^ R}
 3.[{wp}.S.{Q} V {wp}.S.R = {wp}.S.{Q V R}
-4.[{wp}.skip.{Q} = {Q}
-5.[{wp}.(x:=E).{Q} = {Q}(x:=E)
-6.[{wp}.S;T.{Q} = {wp}.S.({wp}.T.{Q})
+4.{wp}.skip.{Q} = {Q}
+5.{wp}.(x:=E).{Q} = {Q}(x:=E)
+6.{wp}.S;T.{Q} = {wp}.S.({wp}.T.{Q})
 para demostrar if:
 	1-[P-> B0 V ... V BN]
 	2-[P ^ Bi -> wp.Si.Q]
@@ -98,7 +98,7 @@ para demostrar do:
 	y=B ^ x=A
 
 
-4-	
+4-
 	a-
 		{True}
 		if 
@@ -199,53 +199,59 @@ para demostrar do:
 		od
 		{x = N}
 
-		{I:x=N}
+		{I:N≥x}
 
 		{V:N-x}
 
-		Ini:{N ≥ 0}x := 0{x = N}
+		Ini:{N ≥ 0}x := 0{N≥x}
 			={def wp}
-		N ≥ 0 -> wp.x := 0.{x = N}
+		N ≥ 0 -> wp.x := 0.{N≥x}
 			={def wp}
-		N ≥ 0 -> 0 = N
+		N ≥ 0 -> N≥0
 			={Logica}
 		True
 
-		Pos:x=N ^ ¬(x <> N)-> x = N
+		Pos:N≥x ^ ¬(x <> N)-> x = N
 			={Logica}
 		x=N ^ x = N-> x = N
 			={Logica}
 		True
 
-		Inv:{x <> N ^ x=N}x := x + 1{x=N}
+		Inv:{x <> N ^ N≥x}x := x + 1{N≥x}
 			={def wp}
-		x <> N ^ x=N -> wp.x := x + 1{x=N}
+		x <> N ^ N≥x -> wp.x := x + 1{N≥x}
 			={def wp}
-		x <> N ^ x=N -> x + 1=N
+		x <> N ^ N≥x -> N≥x + 1
 			={Logica}
-		False -> x + 1=N
-			={False -> q = True}
-		True
-
-		Var a:x=N ^ x <> N -> N-x >= 0
-			={Logica}
-		False-> N-x >= 0
-			={False -> q = True}
-		True
-
-
-		Var b:{x=N ^ x <> N ^ N-x = A}x := x + 1{N-x < A}
-			={def wp}
-		x=N ^ x <> N ^ N-x = A -> wp.x := x + 1.{N-x < A}
-			={def wp}
-		x=N ^ x <> N ^ N-x = A -> N-(x + 1) < A
+		N>x -> N≥x + 1
 			={aritmetica}
-		x=N ^ x <> N ^ N-x = A -> N - x - 1 < A
-			={Leibniz}
-		x=N ^ x <> N ^ N-x = A -> A - 1 < A
+		N>x -> N-1≥x
+			={aritmetica}
+		N>x -> N>x
 			={Logica}
-		x=N ^ x <> N ^ N-x = A -> True
-			={p->True = True}
+		True
+		
+
+		Var a:N≥x ^ x <> N -> N-x >= 0
+			={aritmetica}
+		N≥x ^ x <> N -> N >= x
+			={leibniz}
+		True
+
+
+
+		Var b:{N≥x ^ x <> N ^ N-x = A}x := x + 1{N-x < A}
+			={def wp}
+		N≥x ^ x <> N ^ N-x = A -> wp.x := x + 1.{N-x < A}
+			={def wp}
+		N≥x ^ x <> N ^ N-x = A -> N - x - 1 < A
+			={aritmetica}
+		N≥x ^ x <> N ^ N-x = A -> N - x < A + 1
+			={Precondicion}
+		N≥x ^ x <> N ^ N-x = A -> A < A + 1
+			={Logica}
+		N≥x ^ x <> N ^ N-x = A -> True
+			={p -> True = True}
 		True
 
 
@@ -262,3 +268,23 @@ para demostrar do:
 		n,r := n + 1, r ^ A.n = A.(N - n -1)
 	od
 	{r = <∀i : 0 ≤ i < N : A.i = A.(N − i − 1)>}
+
+	{N > 0}.n,r := 0, True.{r = <∀i : 0 ≤ i < n : A.i = A.(N − i − 1) ∧ 0 ≤ n ≤ N>}
+		={def wp}
+	N > 0 -> wp.n,r := 0, True.{r = <∀i : 0 ≤ i < n : A.i = A.(N − i − 1) ∧ 0 ≤ n ≤ N>}
+	N > 0 -> True = <∀i : 0 ≤ i < 0 : A.i = A.(N − i − 1) ∧ 0 ≤ 0 ≤ N>
+		={Rango Vacio,neutro V}
+	N > 0 -> True = True
+		={Logica}
+	True
+
+
+	n,r := 0, True
+	{N > 0}
+	do n <> N
+		n,r := n + 1, r ^ A.n = A.(N - n -1)
+	od
+	{r = <∀i : 0 ≤ i < N : A.i = A.(N − i − 1)>}
+
+	{I=0 ≤ n ≤ N}
+	{V=N-n}
