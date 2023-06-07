@@ -7,6 +7,7 @@
 para demostrar if:
 	1-[P-> B0 V ... V BN]
 	2-[P ^ Bi -> wp.Si.Q]
+	wp.if.{Q}=(B0 v ... v Bn) ^ (B0 -> wp.S0.{Q}) ^ ... ^ (Bn -> wp.Sn.{Q})
 para demostrar do:
 	Inicializacion:{P}S{I}
 	Postcondicion:I ^ ¬B0 ^ ... ^ ¬Bn -> Q
@@ -130,31 +131,35 @@ para demostrar do:
 
 	b-
 		{True}
+		x, y := y * y, x * x;
 		if 
-			¬a v b -> a := ¬a
-			[] a v ¬b -> b := ¬b
+			x >= y -> x := x + 1
+			[] x <= y -> y := y - x
 		fi
-		{a ∨ b}
-		1-True-> ¬a v b v a v ¬b
-			={asos V}
-		True-> (¬a v a) v (b v ¬b)
-			={tercero excluido}
-		True-> True v True
-			={idempotencia}
+		{x ≥ 0 ∧ y ≥ 0}
+
+			={def wp}
+		True -> wp.x, y := y * y, x * x.(wp.if.{x ≥ 0 ∧ y ≥ 0})
+
+		wp.if.{x ≥ 0 ∧ y ≥ 0}
+			={def wp if}
+		(x >= y V x <= y) ^ (x >= y -> wp.x := x + 1.{x ≥ 0 ∧ y ≥ 0}) ^ (x <= y -> wp.y := y - x.{x ≥ 0 ∧ y ≥ 0})
+			={Logica y aritmetica}
+		True ^ (x >= y -> wp.x := x + 1.{x ≥ 0 ∧ y ≥ 0}) ^ (x <= y -> wp.y := y - x.{x ≥ 0 ∧ y ≥ 0})
+			={def wp sub}
+		True ^ (x >= y -> x + 1 ≥ 0 ∧ y ≥ 0) ^ (x <= y -> wp.y := y - x.{x ≥ 0 ∧ y ≥ 0})
+			={aritmetica}
+		True ^ True ^ (x <= y -> wp.y := y - x.{x ≥ 0 ∧ y ≥ 0})
+			={def wp sust}
+		True ^ True ^ x <= y -> x ≥ 0 ∧ y - x ≥ 0
+			={aritmetica}
+		True ^ True ^ True
+			={Logica}
+		True
+
+		True -> wp.x, y := y * y, x * x.True
+			={def wp sust}
 		True -> True
-		True
-		2-True ^ ¬a v b -> wp.a := ¬a.{a ∨ b}
-			={Logica}
-		¬a v b -> wp.a := ¬a.{a ∨ b}
-			={def wp}
-		¬a v b -> ¬a ∨ b
-			={Logica}
-		True
-		True ^ a v ¬b -> wp.b := ¬b.{a ∨ b}
-			={Logica}
-		a v ¬b -> wp.b := ¬b.{a ∨ b}
-			={def wp}
-		a v ¬b -> a ∨ ¬b
 			={Logica}
 		True
 
@@ -255,36 +260,143 @@ para demostrar do:
 		True
 
 
-
-
 5-
+	El algoritmo compara el arreglo en capicua
 	con N : Nat
 	var n : Nat; r : Bool
 	var A: array array:[0..N) of Nat
 	{N > 0}
 	n,r := 0, True
-	{r = <∀i : 0 ≤ i < n : A.i = A.(N − i − 1) ∧ 0 ≤ n ≤ N>}
+	-----{r = <∀i : 0 ≤ i < n : A.i = A.(N − i − 1) ∧ 0 ≤ n ≤ N>}
 	do n <> N
 		n,r := n + 1, r ^ A.n = A.(N - n -1)
 	od
 	{r = <∀i : 0 ≤ i < N : A.i = A.(N − i − 1)>}
 
-	{N > 0}.n,r := 0, True.{r = <∀i : 0 ≤ i < n : A.i = A.(N − i − 1) ∧ 0 ≤ n ≤ N>}
+	{I=r = <∀i : 0 ≤ i < n : A.i = A.(N − i − 1)> ∧ 0 ≤ n ≤ N}
+	{V=N-n}
+
+	Ini: {N > 0}.n,r := 0, True.{r = <∀i : 0 ≤ i < n : A.i = A.(N − i − 1) ∧ 0 ≤ n ≤ N>}
 		={def wp}
 	N > 0 -> wp.n,r := 0, True.{r = <∀i : 0 ≤ i < n : A.i = A.(N − i − 1) ∧ 0 ≤ n ≤ N>}
+		={def wp sust}
 	N > 0 -> True = <∀i : 0 ≤ i < 0 : A.i = A.(N − i − 1) ∧ 0 ≤ 0 ≤ N>
-		={Rango Vacio,neutro V}
+		={Rango vacio,neutro V}
 	N > 0 -> True = True
+		={Logica,p->True = True}
+	True
+
+	Pos:r = <∀i : 0 ≤ i < n : A.i = A.(N − i − 1) ∧ 0 ≤ n ≤ N> ^ ¬(n <> N) -> r = <∀i : 0 ≤ i < N : A.i = A.(N − i − 1)>
 		={Logica}
+	r = <∀i : 0 ≤ i < n : A.i = A.(N − i − 1) ∧ n = N -> r = <∀i : 0 ≤ i < N : A.i = A.(N − i − 1)>
+		={susti}
+	r = <∀i : 0 ≤ i < n : A.i = A.(N − i − 1) ∧ n = N -> r = <∀i : 0 ≤ i < n : A.i = A.(N − i − 1)>
+		={Leibniz}
+	True
+
+	Invar:{n <> N ^ r = <∀i : 0 ≤ i < n : A.i = A.(N − i − 1)> ∧ 0 ≤ n ≤ N}n,r := n + 1, r ^ A.n = A.(N - n -1){r = <∀i : 0 ≤ i < n : A.i = A.(N − i − 1)> ∧ 0 ≤ n ≤ N}
+		={def wp}
+	n <> N ^ r = <∀i : 0 ≤ i < n : A.i = A.(N − i − 1)> ∧ 0 ≤ n ≤ N -> wp.n,r := n + 1, r ^ A.n = A.(N - n -1).{r = <∀i : 0 ≤ i < n : A.i = A.(N − i − 1)> ∧ 0 ≤ n ≤ N}
+		={def wp sust}
+	n <> N ^ r = <∀i : 0 ≤ i < n : A.i = A.(N − i − 1)> ∧ 0 ≤ n ≤ N -> r ^ A.n = A.(N - n -1) = <∀i : 0 ≤ i < n + 1 : A.i = A.(N − i − 1)> ∧ 0 ≤ n + 1 ≤ N
+		={particion de rango}
+	n <> N ^ r = <∀i : 0 ≤ i < n : A.i = A.(N − i − 1)> ∧ 0 ≤ n ≤ N -> r ^ A.n = A.(N - n -1) = <∀i : 0 ≤ i < n  : A.i = A.(N − i − 1)> ^ <∀i : i=n  : A.i = A.(N − i − 1)> ∧ 0 ≤ n + 1 ≤ N
+		={Rango unitario}
+	n <> N ^ r = <∀i : 0 ≤ i < n : A.i = A.(N − i − 1)> ∧ 0 ≤ n ≤ N -> r ^ A.n = A.(N - n -1) = <∀i : 0 ≤ i < n  : A.i = A.(N − i − 1)> ^  A.n = A.(N − n − 1) ∧ 0 ≤ n + 1 ≤ N
+		={sust}
+	n <> N ^ r = <∀i : 0 ≤ i < n : A.i = A.(N − i − 1)> ∧ 0 ≤ n ≤ N -> r ^ A.n = A.(N - n -1) = r ^  A.n = A.(N − n − 1) ∧ 0 ≤ n + 1 ≤ N
+		={aritmetica}
+	r = <∀i : 0 ≤ i < n : A.i = A.(N − i − 1)> ∧ 0 ≤ n < N -> r ^ A.n = A.(N - n -1) = r ^  A.n = A.(N − n − 1) ∧ 0 ≤ n + 1 ≤ N
+		={orden}
+	r = <∀i : 0 ≤ i < n : A.i = A.(N − i − 1)> ∧ 0 ≤ n < N -> r ^ A.n = A.(N - n -1) = r ^  A.n = A.(N − n − 1) ∧ True
+		={Logica}
+	r = <∀i : 0 ≤ i < n : A.i = A.(N − i − 1)> ∧ 0 ≤ n < N -> True ∧ True
+		={Logica}
+	r = <∀i : 0 ≤ i < n : A.i = A.(N − i − 1)> ∧ 0 ≤ n < N -> True 
+		={p->True=True}
+	True
+
+	Var a:r = <∀i : 0 ≤ i < n : A.i = A.(N − i − 1) ∧ 0 ≤ n ≤ N> ^ n <> N -> N-n >= 0
+		={arit}
+	r = <∀i : 0 ≤ i < n : A.i = A.(N − i − 1) ∧ 0 ≤ n ≤ N> ^ n<>N -> N >n V N=n
+		={arit}
+	r = <∀i : 0 ≤ i < n : A.i = A.(N − i − 1) ∧ 0 ≤ n ≤ N> ^ n<>N ->True
+		={p->True = True}
 	True
 
 
-	n,r := 0, True
-	{N > 0}
-	do n <> N
-		n,r := n + 1, r ^ A.n = A.(N - n -1)
-	od
-	{r = <∀i : 0 ≤ i < N : A.i = A.(N − i − 1)>}
+	Var b:{r = <∀i : 0 ≤ i < n : A.i = A.(N − i − 1) ∧ 0 ≤ n ≤ N> ^ n <> N ^ N-n = A}n,r := n + 1, r ^ A.n = A.(N - n -1){N-n < A}
+		={def wp}
+	r = <∀i : 0 ≤ i < n : A.i = A.(N − i − 1) ∧ 0 ≤ n ≤ N> ^ n <> N ^ N-n = A ->wp.n,r := n + 1, r ^ A.n = A.(N - n -1).{N-n < A}
+		={def wp sust}
+	r = <∀i : 0 ≤ i < n : A.i = A.(N − i − 1) ∧ 0 ≤ n ≤ N> ^ n <> N ^ N-n = A ->N-n-1 < A
+		={arit}
+	r = <∀i : 0 ≤ i < n : A.i = A.(N − i − 1) ∧ 0 ≤ n ≤ N> ^ n <> N ^ N-n = A ->N-n< A + 1
+		={sust precondicion}
+	r = <∀i : 0 ≤ i < n : A.i = A.(N − i − 1) ∧ 0 ≤ n ≤ N> ^ n <> N ^ N-n = A ->A< A + 1
+		={aritmetica}
+	r = <∀i : 0 ≤ i < n : A.i = A.(N − i − 1) ∧ 0 ≤ n ≤ N> ^ n <> N ^ N-n = A ->True
+		={p->True=True}
+	True
 
-	{I=0 ≤ n ≤ N}
-	{V=N-n}
+
+
+
+
+
+if a ≥ b -> a:=a−b ;
+[ ] b ≥ a -> b:=b−a ;
+fi
+{a > 0 ∧ b > 0}
+
+wp.if.{a > 0 ∧ b > 0}
+	={def wp if}
+(a ≥ b v b ≥ a) ^ (a ≥ b -> wp.a:=a−b.{a > 0 ∧ b > 0}) ^ (b ≥ a -> wp.b:=b−a.{a > 0 ∧ b > 0})
+	={Aritmetica}
+True ^ (a ≥ b -> wp.a:=a−b.{a > 0 ∧ b > 0}) ^ (b ≥ a -> wp.b:=b−a.{a > 0 ∧ b > 0})
+	={def wp sust}
+True ^ (a ≥ b -> a−b > 0 ∧ b > 0) ^ (b ≥ a -> wp.b:=b−a.{a > 0 ∧ b > 0})
+	={Aritmetica}
+True ^ True ^ (b ≥ a -> wp.b:=b−a.{a > 0 ∧ b > 0})
+	={def wp sust}
+True ^ True ^ (b ≥ a -> a > 0 ∧ b−a > 0)
+	={Aritmetica}
+True ^ True ^ True
+	={Logica}
+True
+
+
+
+{P}.Skip;Skip.{Q}
+		={def wp}
+P->wp.Skip;Skip.{Q}
+		={def wp comp}
+P->wp.Skip.(wp.Skip.{Q})
+		={def wp.skip.{Q} = {Q}}
+P->wp.Skip.{Q}
+		={def wp.skip.{Q} = {Q}}
+{Q}
+
+{P}.Skip.{Q}
+		={def wp.skip.{Q} = {Q}}
+{Q}
+
+Skip;Skip=Skip
+
+
+var i , k : int ;
+cons N: int ;
+array b [0,N) of int ;
+{N > 0}
+i , k := 1 , 0 ;
+do i < N ∧ b[i] ≤ b[k] → i := i +1
+[ ] i < N ∧ b[i] ≥ b[k] → k , i := i , i := i +1
+od
+{∀j : 0 ≤ j < N : b[k] ≥ b[j]}
+
+
+var x , y : int ;
+{x>0 ^ y>0}
+a=a+b;
+b=a-b;
+a=a-b;
