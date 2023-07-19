@@ -1,0 +1,505 @@
+--1.[{wp}.S.False = False
+--2.[{wp}.S.{Q} ^ {wp}.S.R = {wp}.S.{Q ^ R}
+--3.[{wp}.S.{Q} V {wp}.S.R = {wp}.S.{Q V R}
+--4.{wp}.skip.{Q} = {Q}
+--5.{wp}.(x:=E).{Q} = {Q}(x:=E)
+--6.{wp}.S;T.{Q} = {wp}.S.({wp}.T.{Q})
+--para demostrar if:
+--	1-[P-> B0 V ... V BN]
+--	2-[P ^ Bi -> wp.Si.Q]
+--	wp.if.{Q}=(B0 v ... v Bn) ^ (B0 -> wp.S0.{Q}) ^ ... ^ (Bn -> wp.Sn.{Q})
+--para demostrar do:
+--	Inicializacion:{P}S{I}
+--	Postcondicion:I ^ ¬B0 ^ ... ^ ¬Bn -> Q
+--	Invariante:{Bi ^ I}Si{I}
+--	Variante a:I ^ Bi -> v >= 0
+--	Variante b:{I ^ Bi ^ v = A}Si{v < A}
+--
+--variante debe satisfacer I ∧ v <= 0 -> ¬B
+--
+-- <Max i : R.i : F.i> = R.x ∧ <Vi : R.i : F.i <= F.x>
+-- <Min i : R.i : F.i> = R.x ∧ <Vi : R.i : F.x <= F.i>
+--
+--------------------------------------------------------------------------------------------------
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--Ej 1
+--	r=X^Y
+--	
+--Precondición P: {x = X ∧ y = Y ∧ x ≥ 0 ∧ y ≥ 0}
+--Postcondición Q: {r = X^Y }
+--Invariante I: {y ≥ 0 ∧ r ∗ x^y = X^Y}
+--
+--a
+--exp (x,y) = (y = 0 → 1
+--			[]y =/ 0 → x*exp(x,y-1)
+--			)
+--
+--
+--
+--
+--Inicializacion:{x = X ∧ y = Y ∧ x ≥ 0 ∧ y ≥ 0}S'{y ≥ 0 ∧ r ∗ x^y = X^Y}
+--def wp 	s'=r:=E
+--x = X ∧ y = Y ∧ x ≥ 0 ∧ y ≥ 0 -> wp.r:=E.y ≥ 0 ∧ r ∗ x^y = X^Y 	def wp asig
+--x = X ∧ y = Y ∧ x ≥ 0 ∧ y ≥ 0 -> y ≥ 0 ∧ E ∗ x^y = X^Y planteo E=1 y despejo
+--x = X ∧ y = Y ∧ x ≥ 0 ∧ y ≥ 0 -> y ≥ 0 ∧ 1 = X^Y/x^y 	por leibniz
+--True
+-------------------------------------
+--{x = X ∧ y = Y ∧ x ≥ 0 ∧ y ≥ 0}
+--r:=1
+--
+--------------------------------------
+--Postcondicion:y ≥ 0 ∧ r ∗ x^y = X^Y ^ ¬B -> r = X^Y
+--proponemos ¬B= y <= 0 por lo tanto B = y > 0
+--y ≥ 0 ∧ r ∗ x^y = X^Y ^ y<=0 -> r = X^Y  	y>=0 ^ y<=0 == y=0
+--r ∗ x^y = X^Y ^ y=0 -> r = X^Y 	reemplazo y
+--r ∗ x^0 = X^Y -> r = X^Y
+--r = X^Y -> r = X^Y
+--True
+-------------------------------------
+--{x = X ∧ y = Y ∧ x ≥ 0 ∧ y ≥ 0}
+--r:=1
+--do y > 0 -> r,y:=E,F
+--------------------------------------
+--
+--Invariante:{y > 0 ^ y ≥ 0 ∧ r ∗ x^y = X^Y}Si{y ≥ 0 ∧ r ∗ x^y = X^Y} Si=r,y:=E,F	
+--y > 0 ^ y ≥ 0 ∧ r ∗ x^y = X^Y
+--def exp
+--y-1 ≥ 0 ^ x ∗ r * x^y-1 = X^Y
+--wp.r,y:=x*r,y-1.{y ≥ 0 ∧ r ∗ x^y = X^Y}
+-------------------------------------
+--{x = X ∧ y = Y ∧ x ≥ 0 ∧ y ≥ 0}
+--r:=1
+--do y > 0 -> r,y:=x*r,y-1 od
+--------------------------------------
+--
+--Variante a:y >= 0 ∧ r ∗ x^y = X^Y ^  y > 0 -> y = 0
+--
+--v=y
+--y ≥ 0 ∧ r ∗ x^y = X^Y ^  y >= 0 -> y = 0
+--arit
+--y>0 v y=0 ∧ r ∗ x^y = X^Y -> y = 0
+--leibniz
+--True
+--
+--Variante b:{y >= 0 ∧ r ∗ x^y = X^Y ^ y > 0 ^ y = A}r,y:=x*r,y-1{y < A}	def wp y wp asig
+--y >= 0 ∧ r ∗ x^y = X^Y ^ y > 0 ^ y = A -> y-1 < A 	reemplazo y=A
+--y >= 0 ∧ r ∗ x^y = X^Y ^ y > 0 ^ y = A -> y-1 < y 	aritmetica 
+--True
+--
+-------------------------------------
+--{x = X ∧ y = Y ∧ x ≥ 0 ∧ y ≥ 0}
+--r:=1
+--do y > 0 -> r,y:=x*r,y-1 od
+--{r = X^Y }
+--------------------------------------
+--
+--
+--b
+--exp (x,y) = (
+--			y = 0 → 1
+--			[]y /= 0 → ( 
+--				-y mod 2 = 0 → exp(x*x,y div 2)
+--				-[] y mod 2 = 1 → x*exp(x,y-1)
+--						)
+--			  )
+--
+--
+--Precondición P: {x = X ∧ y = Y ∧ x ≥ 0 ∧ y ≥ 0}
+--Postcondición Q: {r = X^Y }
+--Invariante I: {y ≥ 0 ∧ r ∗ x^y = X^Y}
+--
+--Inicializacion:{x = X ∧ y = Y ∧ x ≥ 0 ∧ y ≥ 0}S'{y ≥ 0 ∧ r ∗ x^y = X^Y}
+--def wp 	s'=r:=E
+--x = X ∧ y = Y ∧ x ≥ 0 ∧ y ≥ 0 -> wp.r:=E.y ≥ 0 ∧ r ∗ x^y = X^Y 	def wp asig
+--x = X ∧ y = Y ∧ x ≥ 0 ∧ y ≥ 0 -> y ≥ 0 ∧ E ∗ x^y = X^Y planteo E=1 y despejo
+--x = X ∧ y = Y ∧ x ≥ 0 ∧ y ≥ 0 -> y ≥ 0 ∧ 1 = X^Y/x^y 	por leibniz
+--True
+-------------------------------------
+--{x = X ∧ y = Y ∧ x ≥ 0 ∧ y ≥ 0}
+--r:=1
+-------------------------------------
+--
+--Postcondicion:y ≥ 0 ∧ r ∗ x^y = X^Y ^ ¬B -> r = X^Y
+--proponemos ¬B= y = 0 por lo tanto B = y /= 0
+--
+--y ≥ 0 ∧ r ∗ x^y = X^Y ^ y=0 	reemplazo y = 0
+--r ∗ x^0 = X^Y 	aritmetica
+--r = X^Y
+--
+-------------------------------------
+--{x = X ∧ y = Y ∧ x ≥ 0 ∧ y ≥ 0}
+--r:=1
+--do y /= 0 -> if	
+--				(y mod 2 = 0) ->S0
+--				(y mod 2 = 1) ->S1
+--			   fi
+--------------------------------------
+--Invariante:{y /= 0 ^ y ≥ 0 ∧ r ∗ x^y = X^Y}if{y ≥ 0 ∧ r ∗ x^y = X^Y}
+--wp.if.y ≥ 0 ∧ r ∗ x^y = X^Y   wp if
+--(y mod 2 = 0 V y mod 2 = 1) ^ (y mod 2 = 0 -> wp.S0.y ≥ 0 ∧ r ∗ x^y = X^Y) ^ (y mod 2 = 1 -> wp.S1.y ≥ 0 ∧ r ∗ x^y = X^Y) 	por aritmetica
+-- True ^ (y mod 2 = 0 -> wp.S0.y ≥ 0 ∧ r ∗ x^y = X^Y) ^ (y mod 2 = 1 -> wp.S1.y ≥ 0 ∧ r ∗ x^y = X^Y) 	def wp.S0 y wp.S1
+--(y div 2 ≥ 0 ∧ r ∗ x*x^(y div 2) = X^Y) ^ (y-1 ≥ 0 ∧ r * x * x^y-1 = X^Y)		S0=y,x:=y div 2,x*x y S1=r,y:=r*x,y-1
+--
+---------------------------------------
+--{x = X ∧ y = Y ∧ x ≥ 0 ∧ y ≥ 0}
+--r:=1
+--do y /= 0 -> if	
+--				(y mod 2 = 0) ->y,x:=y div 2,x*x
+--				(y mod 2 = 1) ->r,y:=r*x,y-1
+--			   fi
+--od
+--------------------------------------
+--
+--Variante a:y ≥ 0 ∧ r ∗ x^y = X^Y ^ y/=0 -> v >= 0 	propongo v=y
+--y ≥ 0 ∧ r ∗ x^y = X^Y ^ y/=0 -> y >= 0 	leibniz
+--True
+--
+--Variante b:{y ≥ 0 ∧ r ∗ x^y = X^Y ^ y/=0 ^ y = A}if{y < A} 	def wp
+--y ≥ 0 ∧ r ∗ x^y = X^Y ^ y/=0 ^ y = A -> wp.if.{y < A}
+--(y mod 2 = 0 -> wp.y,x:=y div 2,x*x.y < A)^(y mod 2 = 1 -> wp.r,y:=r*x,y-1.y < A) 	def wp asig
+--(y mod 2 = 0 -> y div 2 < A)^(y mod 2 = 1 -> y-1 < A)		aritmetica
+--(y mod 2 = 0 -> y < 2*A)^(y mod 2 = 1 -> y < A+1)		por leibniz
+--True
+--
+--
+---------------------------------------
+--{x = X ∧ y = Y ∧ x ≥ 0 ∧ y ≥ 0}
+--r:=1
+--do y /= 0 -> if	
+--				(y mod 2 = 0) ->y,x:=y div 2,x*x
+--				(y mod 2 = 1) ->r,y:=r*x,y-1
+--			   fi
+--od
+--------------------------------------
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--Ej 2 			k=Maxi:0<=i<n ^ 2^i<=n:2^i
+--Precondición P: {n > 0}
+--Postcondición Q: {0 < k ≤ n ∧ n < 2 ∗ k ∧ (∃j : 0 ≤ j : k = 2^j )}
+--Invariante I: {0 < k ≤ n ∧ (∃j : 0 ≤ j : k = 2^j )}
+--Inicializacion: {n > 0}S'{0 < k ≤ n ∧ (∃j : 0 ≤ j : k = 2^j )}
+--planteo S': k:=1
+--{n > 0}k:=1{0 < k ≤ n ∧ (∃j : 0 ≤ j : k = 2^j )}	def wp
+--n > 0 -> wp.k:=1.{0 < k ≤ n ∧ (∃j : 0 ≤ j : k = 2^j )} def wp asig
+--n > 0 -> 0 < 1 ≤ n ∧ (∃j : 0 ≤ j : 1 = 2^j )
+--True
+------------------------------------
+--Cons n :Int,var k  :Int
+--k:=1
+------------------------------------
+--Postcondicion:0 < k ≤ n ∧ (∃j : 0 ≤ j : k = 2^j ) ^ ¬B0 -> 0 < k ≤ n ∧ n < 2 ∗ k ∧ (∃j : 0 ≤ j : k = 2^j )
+-- planteo ¬B= n < 2 ∗ k osea B = n >= 2 * k
+--0 < k ≤ n ∧ (∃j : 0 ≤ j : k = 2^j ) ^ n < 2 * k -> 0 < k ≤ n ∧ n < 2 ∗ k ∧ (∃j : 0 ≤ j : k = 2^j )
+--
+------------------------------------
+--Cons n :Int,var k j :Int
+--k:=1
+--do n >= 2 * k -> k:=E od
+------------------------------------
+--
+--Invariante:{n >= 2 * k ^ 0 < k ≤ n ∧ (∃j : 0 ≤ j : k = 2^j )}Si{0 < k ≤ n ∧ (∃j : 0 ≤ j : k = 2^j )}	planteo Si: k:=2*(k-1)
+--{n >= 2 * k ^ 0 < k ≤ n ∧ (∃j : 0 ≤ j : k = 2^j )}k:=2*(k-1){0 < k ≤ n ∧ (∃j : 0 ≤ j : k = 2^j )}		def wp
+--n >= 2 * k ^ 0 < k ≤ n ∧ (∃j : 0 ≤ j : k = 2^j ) -> wp.k:=2*(k-1).{0 < k ≤ n ∧ (∃j : 0 ≤ j : k = 2^j )}	def wp asig
+--0 < 2*(k-1) ≤ n ∧ (∃j : 0 ≤ j : 2*(k-1) = 2^j )
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--Ej 3
+--	a-
+--	Vi:0<=i<N:A.i>=0
+--	Pre:N>=0
+--	Pos:<Vi:0<=i<N:A.i>0>=r
+--	
+--	I:<Vi:0<=i<n:A.i>0> = r ^ 0<=n<=N
+--
+--
+--	Inicializacion:{N>=0}S'{<Vi:0<=i<n:A.i>0> = r ^ 0<=n<=N}	planteo S'=n,r:=0,True
+--	{N>=0}n,r:=0,True{<Vi:0<=i<n:A.i>0> = r ^ 0<=n<=N}	def wp y de asignacion
+--	N>=0 -> <Vi:0<=i<0:A.i>0> = True ^ 0<=0<=N 	rango vacio
+--	N>=0 -> True = True ^ 0<=0<=N 	aritmetica y logica
+--	True
+--
+--
+-------------------------------------
+--{N>=0}
+--n,r:=0,True
+-------------------------------------
+--
+--	Postcondicion:<Vi:0<=i<n:A.i>0> = r ^ 0<=n<=N ^ ¬Bn -> <Vi:0<=i<N:A.i>0> = r 		planteo ¬Bn : n = N y Bn : n /= N
+--	<Vi:0<=i<n:A.i>0> = r ^ 0<=n<=N ^ n = N 	aritmetica y reemplazo n=N
+--	<Vi:0<=i<N:A.i>0> = r
+--
+-------------------------------------
+--{N>=0}
+--n,r:=0,True
+--do n /= N -> r,n:=F,E od
+--{<Vi:0<=i<N:A.i>0>=r}
+-------------------------------------
+--
+--	Invariante:{n /= N ^ <Vi:0<=i<n:A.i>0> = r ^ 0<=n<=N}r,n:=F,E{<Vi:0<=i<n:A.i>0> = r ^ 0<=n<=N} 	planteo E: n + m y def wp
+--	n /= N ^ <Vi:0<=i<n:A.i>0> = r ^ 0<=n<=N -> <Vi:0<=i<n + m:A.i>0> = F ^ 0<=n + m<=N
+--	<Vi:0<=i<n + m:A.i>0> = F ^ 0<=n + m<=N 	particion de rango y rango unitario
+--	( <Vi:0<=i<n :A.i>0> ^ A.n ^ <Vi:n+1<=i<n + m:A.i>0> )= F ^ 0<=n + m<=N 	reemplazo por antecedente y m = 1 para rango vacio
+--	( r ^ A.n ^ <Vi:n+1<=i<n + 1:A.i>0> )= F ^ 0<=n + 1<=N 	rango vacio 
+--	( r ^ A.n ^ True )= F ^ 0<=n + 1<=N 	True ^ p = p
+--	( r ^ A.n )= F ^ 0<=n + 1<=N 	aritmetica (0<=n + 1<=N entonces 0<=n<N)
+--	( r ^ A.n )= F ^ 0<=n<N 	por leibniz
+--	( r ^ A.n )= F ^ True	True ^ p = p
+-- 	( r ^ A.n )= F
+--
+--
+-------------------------------------
+--{N>=0}
+--n,r:=0,True
+--do n /= N -> r,n:=r ^ A.n,n + 1 od
+--{<Vi:0<=i<N:A.i>0>=r}
+-------------------------------------
+--
+--	Variante a:<Vi:0<=i<n:A.i>0> = r ^ 0<=n<=N ^ n /= N -> v >= 0 	propongo v = N-n
+--	<Vi:0<=i<n:A.i>0> = r ^ 0<=n<=N ^ n /= N -> N-n >= 0 	aritmetica
+--	<Vi:0<=i<n:A.i>0> = r ^ 0<=n<=N ^ n /= N -> N >= n 	leibniz
+--	True
+--
+--	Variante b:{<Vi:0<=i<n:A.i>0> = r ^ 0<=n<=N ^ n /= N ^ N-n = A}r,n:=r ^ A.n,n + 1{N-n < A} 	def wp y asig
+--	<Vi:0<=i<n:A.i>0> = r ^ 0<=n<=N ^ n /= N ^ N-n = A -> N-(n+1) < A 	aritmetica
+--	<Vi:0<=i<n:A.i>0> = r ^ 0<=n<=N ^ n /= N ^ N-n = A -> N-n-1 < A 	asocio y reemplazo (N-n) = A
+--	<Vi:0<=i<n:A.i>0> = r ^ 0<=n<=N ^ n /= N ^ N-n = A -> A-1 < A 	aritmetica
+--	True
+--
+--
+--	b-
+--	Ei:0<=i<N:A.i>=0
+--	Pre:N>=0
+--	Pos:<Ei:0<=i<N:A.i>=0>=r
+--	
+--	I:<Ei:0<=i<n:A.i>=0> = r ^ 0<=n<=N
+--
+--	Inicializacion:{N>=0}S'{<Ei:0<=i<N:A.i>=0> = r ^ 0<=n<=N}	propongo S': r,n:=False,0 y def wp y asig
+--	N>=0 -> <Ei:0<=i<0:A.i>=0> = False ^ 0<=0<=N 	rango vacio y aritmetica
+--	False=False
+--	True
+-------------------------------------
+--{N>=0}
+--r,n:=False,0
+-------------------------------------
+--
+--	Postcondicion:<Ei:0<=i<n:A.i>=0> = r ^ 0<=n<=N ^¬Bn -> <Ei:0<=i<N:A.i>=0>=r 	propongo ¬Bn: N=n y Bn: N/=n
+--	<Ei:0<=i<n:A.i>=0> = r ^ 0<=n<=N ^ N=n 	reemplazo N=n
+--	<Ei:0<=i<N:A.i>=0> = r ^ 0<=N<=N 	aritmetica
+--	<Ei:0<=i<N:A.i>=0> = r
+--
+-------------------------------------
+--{N>=0}
+--r,n:=False,0
+--do N/=n -> r,n:=F,E od
+-------------------------------------
+--
+--
+--
+--	Invariante:{N/=n ^ <Ei:0<=i<n:A.i>=0> = r ^ 0<=n<=N}r,n:=F,E{<Ei:0<=i<n:A.i>=0> = r ^ 0<=n<=N} 	propongo E: n + m y def wp y asig
+--	N/=n ^ <Ei:0<=i<n:A.i>=0> = r ^ 0<=n<=N -> <Ei:0<=i<n + m:A.i>=0> = F ^ 0<=n + m<=N
+--	<Ei:0<=i<n + m:A.i>=0> = F ^ 0<=n + m<=N 	particion de rango y rango unitario
+--	( <Ei:0<=i<n:A.i>=0> ^ A.n ^ <Ei:n+1<=i<n + m:A.i>=0> ) = F ^ 0<=n + m<=N 	promongo m=1
+--	( <Ei:0<=i<n:A.i>=0> ^ A.n ^ <Ei:n+1<=i<n + 1:A.i>=0> ) = F ^ 0<=n + 1<=N 	rango vacio y True ^p = p y antecedente
+--	( r ^ A.n ) = F ^ 0<=n + 1<=N 	aritmetica (0<=n + 1<=N entonces 0<=n<N)
+--	( r ^ A.n ) = F ^ 0<=n<N 	leibniz y True ^p = p
+--	( r ^ A.n ) = F
+--
+--
+-------------------------------------
+--{N>=0}
+--r,n:=False,0
+--do N/=n -> r,n:=r ^ A.n,n+1 od
+--{<Ei:0<=i<N:A.i>=0>=r}
+-------------------------------------
+--
+--
+--	Variante a:<Ei:0<=i<n:A.i>=0> = r ^ 0<=n<=N ^ N/=n -> v >= 0 	propongo v = N-n
+--	<Ei:0<=i<n:A.i>=0> = r ^ 0<=n<=N ^ N/=n -> N-n >= 0 	aritmetica
+--	<Ei:0<=i<n:A.i>=0> = r ^ 0<=n<=N ^ N/=n -> N >= n 		leibniz
+--	True
+--
+--
+--	Variante b:{<Ei:0<=i<n:A.i>=0> = r ^ 0<=n<=N ^ N/=n ^ N-n = A}r,n:=r ^ A.n,n+1{N-n < A} 	def wp y asig
+--	<Ei:0<=i<n:A.i>=0> = r ^ 0<=n<=N ^ N/=n ^ N-n = A -> N-(n+1) < A 	aritmetica
+--	<Ei:0<=i<n:A.i>=0> = r ^ 0<=n<=N ^ N/=n ^ N-n = A -> N-n-1 < A 		asocio y reemplazo (N-n)=A 
+--	<Ei:0<=i<n:A.i>=0> = r ^ 0<=n<=N ^ N/=n ^ N-n = A -> A-1 < A 		aritmetica
+--	True
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--Ej 4
+--M : Int, A : Array[0..M )of Int
+--varr : Int
+--{M ≥ 1}
+--S
+--{r = <Np : 0 ≤ p < M : A.p ≥ 0>}
+--
+--preC: M ≥ 1
+--posC: r = <N p : 0 ≤ p < M : A.p ≥ 0>
+--I: r = <Np : 0 ≤ p < varr : A.p ≥ 0> ^ 0 ≤ varr ≤ M
+--
+--
+--	Inicializacion:{M ≥ 1}S'{r = <Np : 0 ≤ p < varr : A.p ≥ 0> ^ 0 ≤ varr ≤ M} 		planteo S': r,varr:=0,0,def wp y asig
+--	M ≥ 1 -> 0 = <Np : 0 ≤ p < 0 : A.p ≥ 0> ^ 0 ≤ 0 ≤ M 	rango vacio y aritmetica y p ^ True = p
+--	M ≥ 1 -> 0 = 0
+--	True
+-------------------------------------
+--{M>=1}
+--r,varr:=0,0
+-------------------------------------
+--
+--
+--
+--	Postcondicion: r = <Np : 0 ≤ p < varr : A.p ≥ 0> ^ 0 ≤ varr ≤ M ^ ¬Bn -> r = <Np : 0 ≤ p < M : A.p ≥ 0> 	propongo ¬Bn : M = varr y Bn: M /= varr
+-- 	r = <Np : 0 ≤ p < varr : A.p ≥ 0> ^ 0 ≤ varr ≤ M ^ M = varr		reemplazo 
+--	r = <Np : 0 ≤ p < M : A.p ≥ 0> ^ 0 ≤ M ≤ M 		aritmetica
+--	r = <Np : 0 ≤ p < M : A.p ≥ 0>
+--
+-------------------------------------
+--{M>=1}
+--r,varr:=0,0
+--do M/=varr -> r,m:=F,E od
+-------------------------------------
+--
+--
+--	Invariante:{M/=varr ^ r = <Np : 0 ≤ p < varr : A.p ≥ 0> ^ 0 ≤ varr ≤ M}r,m:=F,E{r = <Np : 0 ≤ p < varr : A.p ≥ 0> ^ 0 ≤ varr ≤ M} 	propongo E: varr + n y def wp y asig
+--	M/=varr ^ r = <Np : 0 ≤ p < varr : A.p ≥ 0> ^ 0 ≤ varr ≤ M -> F = <Np : 0 ≤ p < varr + m : A.p ≥ 0> ^ 0 ≤ varr + m ≤ M 		particion de rango y rango unitario
+--	F = (<Np : 0 ≤ p < varr : A.p ≥ 0> + A.varr + <Np : varr + 1 ≤ p < varr + n : A.p ≥ 0>) ^ 0 ≤ varr + m ≤ M 		propongo n = 1
+--	F = (<Np : 0 ≤ p < varr : A.p ≥ 0> + 1 + <Np : varr + 1 ≤ p < varr + 1 : A.p ≥ 0>) ^ 0 ≤ varr + 1 ≤ M 	reemplazo r y rango vacio y (0<=varr + 1<=M entonces 0<=varr<M)
+--	F = (r + 1) ^ 0 ≤ varr  < M 	leibniz
+--	F = (r + 1)
+--
+-------------------------------------
+--{M>=1}
+--r,varr:=0,0
+--do M/=varr -> r,m:=r + 1,varr + 1 od
+-------------------------------------
+--
+--
+--	Variante a:r = <Np : 0 ≤ p < varr : A.p ≥ 0> ^ 0 ≤ varr ≤ M ^ M/=varr -> v >= 0 	propongo v = M - varr
+--	r = <Np : 0 ≤ p < varr : A.p ≥ 0> ^ 0 ≤ varr ≤ M ^ M/=varr -> M - varr >= 0 	aritmetica
+--	r = <Np : 0 ≤ p < varr : A.p ≥ 0> ^ 0 ≤ varr ≤ M ^ M/=varr -> M >= varr 	leibniz
+--	True
+--
+--
+--	Variante b:{r = <Np : 0 ≤ p < varr : A.p ≥ 0> ^ 0 ≤ varr ≤ M ^ M/=varr ^ M - varr = A}r,m:=r + 1,varr + 1{M - varr < A} 	def wp y asig
+--	r = <Np : 0 ≤ p < varr : A.p ≥ 0> ^ 0 ≤ varr ≤ M ^ M/=varr ^ M - varr = A -> M - (varr + 1) < A 	aritmetica y asocio
+--	r = <Np : 0 ≤ p < varr : A.p ≥ 0> ^ 0 ≤ varr ≤ M ^ M/=varr ^ M - varr = A -> (M - varr) - 1 < A 		reemplazo A = (M - varr)
+--	r = <Np : 0 ≤ p < varr : A.p ≥ 0> ^ 0 ≤ varr ≤ M ^ M/=varr ^ M - varr = A -> A - 1 < A 		aritmetica
+--	True
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--Ej 5		(Min n : 1 ≤ n ∧ n mod x = 0 ∧ n mod y = 0 : n) = (1 ≤ m ∧ m mod x = 0 ∧ m mod y = 0) ^ < Vn: 1 ≤ n ∧ n mod x = 0 ∧ n mod y = 0 : m<=n >
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
+--
