@@ -9,7 +9,7 @@
 --	2-[P ^ Bi -> wp.Si.Q]
 --	wp.if.{Q}=(B0 v ... v Bn) ^ (B0 -> wp.S0.{Q}) ^ ... ^ (Bn -> wp.Sn.{Q})
 --para demostrar do:
---	Inicializacion:{P}S{I}
+--	Inicializacion:{P}S'{I}
 --	Postcondicion:I ^ ¬B0 ^ ... ^ ¬Bn -> Q
 --	Invariante:{Bi ^ I}Si{I}
 --	Variante a:I ^ Bi -> v >= 0
@@ -18,7 +18,9 @@
 --variante debe satisfacer I ∧ v <= 0 -> ¬B
 --
 -- <Max i : R.i : F.i> = R.x ∧ <Vi : R.i : F.i <= F.x>
+--z = Max i : R.i : F.i ≡ ∃ i : R.i : z = F.i  ∧ V i : R.i : F.i ≤ z
 -- <Min i : R.i : F.i> = R.x ∧ <Vi : R.i : F.x <= F.i>
+--z = Min i : R.i : F.i ≡ ∃ i : R.i : z = F.i ∧ V i : R.i : z ≤ F.i
 --
 --------------------------------------------------------------------------------------------------
 --
@@ -197,7 +199,7 @@
 --
 --
 --
---Ej 2 			k=Maxi:0<=i<n ^ 2^i<=n:2^i
+--Ej 2 
 --Precondición P: {n > 0}
 --Postcondición Q: {0 < k ≤ n ∧ n < 2 ∗ k ∧ (∃j : 0 ≤ j : k = 2^j )}
 --Invariante I: {0 < k ≤ n ∧ (∃j : 0 ≤ j : k = 2^j )}
@@ -209,7 +211,9 @@
 --True
 ------------------------------------
 --Cons n :Int,var k  :Int
+--{n > 0}
 --k:=1
+--{0 < k ≤ n ∧ n < 2 ∗ k ∧ (∃j : 0 ≤ j : k = 2^j )}
 ------------------------------------
 --Postcondicion:0 < k ≤ n ∧ (∃j : 0 ≤ j : k = 2^j ) ^ ¬B0 -> 0 < k ≤ n ∧ n < 2 ∗ k ∧ (∃j : 0 ≤ j : k = 2^j )
 -- planteo ¬B= n < 2 ∗ k osea B = n >= 2 * k
@@ -217,25 +221,34 @@
 --
 ------------------------------------
 --Cons n :Int,var k j :Int
+--{n > 0}
 --k:=1
 --do n >= 2 * k -> k:=E od
+--{0 < k ≤ n ∧ n < 2 ∗ k ∧ (∃j : 0 ≤ j : k = 2^j )}
 ------------------------------------
 --
---Invariante:{n >= 2 * k ^ 0 < k ≤ n ∧ (∃j : 0 ≤ j : k = 2^j )}Si{0 < k ≤ n ∧ (∃j : 0 ≤ j : k = 2^j )}	planteo Si: k:=2*(k-1)
---{n >= 2 * k ^ 0 < k ≤ n ∧ (∃j : 0 ≤ j : k = 2^j )}k:=2*(k-1){0 < k ≤ n ∧ (∃j : 0 ≤ j : k = 2^j )}		def wp
---n >= 2 * k ^ 0 < k ≤ n ∧ (∃j : 0 ≤ j : k = 2^j ) -> wp.k:=2*(k-1).{0 < k ≤ n ∧ (∃j : 0 ≤ j : k = 2^j )}	def wp asig
---0 < 2*(k-1) ≤ n ∧ (∃j : 0 ≤ j : 2*(k-1) = 2^j )
---
---
---
---
---
---
---
---
---
---
---
+--Invariante:{n >= 2 * k ^ 0 < k ≤ n ∧ (∃j : 0 ≤ j : k = 2^j )}Si{0 < k ≤ n ∧ (∃j : 0 ≤ j : k = 2^j )}	planteo Si: k:=2*k y def wp asig
+--0 < 2*k ≤ n ∧ (∃j : 0 ≤ j : 2*k = 2^j ) 	aritmetica
+--True ^ (∃j : 0 ≤ j : 2*k = 2^j ) 		j=j+1
+--(∃j : 0 ≤ j+1 : 2*k = 2^j+1 ) 	aritmetica
+--(∃j : 0 ≤ j+1 : k = 2^j ) 	j+1=j
+--(∃j : 0 ≤ j : k = 2^j )	leibniz
+--True
+------------------------------------
+--Cons n :Int,var k j :Int
+--{n > 0}
+--k:=1
+--do n >= 2 * k -> k:=2*k od
+--{0 < k ≤ n ∧ n < 2 ∗ k ∧ (∃j : 0 ≤ j : k = 2^j )}
+------------------------------------
+--var a:0 < k ≤ n ∧ (∃j : 0 ≤ j : k = 2^j ) ^ n >= 2 * k -> v>=0 	propongo v: n/2 - k
+--0 < k ≤ n ∧ (∃j : 0 ≤ j : k = 2^j ) ^ n >= 2 * k -> n/2 - k>=0 	aritmetica
+--True
+--var b:{0 < k ≤ n ∧ (∃j : 0 ≤ j : k = 2^j ) ^ n >= 2 * k ^ n/2 - k=A}k:=2*k{n/2 - k<A} 	def wp y asig
+--0 < k ≤ n ∧ (∃j : 0 ≤ j : k = 2^j ) ^ n >= 2 * k ^ n/2 - k=A -> n/2 - 2*k<A 	def A
+--n/2 - 2*k<n/2 -k 	aritmetica
+-- -2*k<-k 	aritmetica
+--True
 --
 --Ej 3
 --	a-
@@ -403,6 +416,8 @@
 --	M ≥ 1 -> 0 = 0
 --	True
 -------------------------------------
+--M : Int, A : Array[0..M )of Int
+--varr : Int
 --{M>=1}
 --r,varr:=0,0
 -------------------------------------
@@ -415,23 +430,35 @@
 --	r = <Np : 0 ≤ p < M : A.p ≥ 0>
 --
 -------------------------------------
+--M : Int, A : Array[0..M )of Int
+--varr : Int
 --{M>=1}
 --r,varr:=0,0
---do M/=varr -> r,m:=F,E od
+--do M/=varr -> S od
+--{r = <Np : 0 ≤ p < M : A.p ≥ 0>}
 -------------------------------------
 --
 --
---	Invariante:{M/=varr ^ r = <Np : 0 ≤ p < varr : A.p ≥ 0> ^ 0 ≤ varr ≤ M}r,m:=F,E{r = <Np : 0 ≤ p < varr : A.p ≥ 0> ^ 0 ≤ varr ≤ M} 	propongo E: varr + n y def wp y asig
---	M/=varr ^ r = <Np : 0 ≤ p < varr : A.p ≥ 0> ^ 0 ≤ varr ≤ M -> F = <Np : 0 ≤ p < varr + m : A.p ≥ 0> ^ 0 ≤ varr + m ≤ M 		particion de rango y rango unitario
---	F = (<Np : 0 ≤ p < varr : A.p ≥ 0> + A.varr + <Np : varr + 1 ≤ p < varr + n : A.p ≥ 0>) ^ 0 ≤ varr + m ≤ M 		propongo n = 1
---	F = (<Np : 0 ≤ p < varr : A.p ≥ 0> + 1 + <Np : varr + 1 ≤ p < varr + 1 : A.p ≥ 0>) ^ 0 ≤ varr + 1 ≤ M 	reemplazo r y rango vacio y (0<=varr + 1<=M entonces 0<=varr<M)
---	F = (r + 1) ^ 0 ≤ varr  < M 	leibniz
---	F = (r + 1)
+--	Invariante:{M/=varr ^ r = <Np : 0 ≤ p < varr : A.p ≥ 0> ^ 0 ≤ varr ≤ M}S{r = <Np : 0 ≤ p < varr : A.p ≥ 0> ^ 0 ≤ varr ≤ M} 	propongo S: if A.p ≥ 0 -> varr,r := varr + n,F y A.p < 0 -> varr,r:=varr + n,F' fi |E: varr + n y def wp y asig
+--	M/=varr ^ r = <Np : 0 ≤ p < varr : A.p ≥ 0> ^ 0 ≤ varr ≤ M -> wp.if.{r = <Np : 0 ≤ p < varr : A.p ≥ 0> ^ 0 ≤ varr ≤ M}	wp if y wp de cada guarda
+--	(A.p ≥ 0 v A.p < 0) ^ (A.p ≥ 0 -> F = <Np : 0 ≤ p < varr + n : A.p ≥ 0> ^ 0 ≤ varr + n ≤ M) ^ (A.p < 0 -> F' = <Np : 0 ≤ p < varr + n : A.p ≥ 0> ^ 0 ≤ varr + n ≤ M) 	aritmetica y p ^ True = p
+--	(A.p ≥ 0 -> F = <Np : 0 ≤ p < varr + n : A.p ≥ 0> ^ 0 ≤ varr + n ≤ M) ^ (A.p < 0 -> F' = <Np : 0 ≤ p < varr + n : A.p ≥ 0> ^ 0 ≤ varr + n ≤ M)	particion de rango y rango unitario(en el primer caso 1 y en el segundo 0)
+--	( A.p ≥ 0 -> F = ( <Np : 0 ≤ p < varr : A.p ≥ 0> + 1 + <Np : varr + 1 ≤ p < varr + n : A.p ≥ 0> ) ^ 0 ≤ varr + n ≤ M) ^^ ( A.p < 0 -> F' = ( <Np : 0 ≤ p < varr : A.p ≥ 0> + 0 + <Np : varr + 1 ≤ p < varr + n : A.p ≥ 0> ) ^ 0 ≤ varr + n ≤ M)	propongo n = 1
+--	( A.p ≥ 0 -> F = ( <Np : 0 ≤ p < varr : A.p ≥ 0> + 1 + <Np : varr + 1 ≤ p < varr + 1 : A.p ≥ 0> ) ^ 0 ≤ varr + 1 ≤ M) ^^ ( A.p < 0 -> F' = ( <Np : 0 ≤ p < varr : A.p ≥ 0> + <Np : varr + 1 ≤ p < varr + 1 : A.p ≥ 0> ) ^ 0 ≤ varr + 1 ≤ M) 	reemplazo r y rango vacio y (0<=varr + 1<=M entonces 0<=varr<M)
+--	( A.p ≥ 0 -> F = ( r + 1 ) ^ 0 ≤ varr < M) ^ ( A.p < 0 -> F' = ( r ) ^ 0 ≤ varr < M)	leibniz
+--	F = ( r + 1 ) ^ F' = ( r )
+--
 --
 -------------------------------------
+--M : Int, A : Array[0..M )of Int
+--varr : Int
 --{M>=1}
 --r,varr:=0,0
---do M/=varr -> r,m:=r + 1,varr + 1 od
+--do M/=varr -> if A.p ≥ 0 -> r,varr:=r + 1,varr + 1
+--				   A.p < 0 -> r,varr:=r,varr + 1
+--				fi
+--od
+--{r = <Np : 0 ≤ p < M : A.p ≥ 0>}
 -------------------------------------
 --
 --
@@ -441,10 +468,13 @@
 --	True
 --
 --
---	Variante b:{r = <Np : 0 ≤ p < varr : A.p ≥ 0> ^ 0 ≤ varr ≤ M ^ M/=varr ^ M - varr = A}r,m:=r + 1,varr + 1{M - varr < A} 	def wp y asig
---	r = <Np : 0 ≤ p < varr : A.p ≥ 0> ^ 0 ≤ varr ≤ M ^ M/=varr ^ M - varr = A -> M - (varr + 1) < A 	aritmetica y asocio
---	r = <Np : 0 ≤ p < varr : A.p ≥ 0> ^ 0 ≤ varr ≤ M ^ M/=varr ^ M - varr = A -> (M - varr) - 1 < A 		reemplazo A = (M - varr)
---	r = <Np : 0 ≤ p < varr : A.p ≥ 0> ^ 0 ≤ varr ≤ M ^ M/=varr ^ M - varr = A -> A - 1 < A 		aritmetica
+--	Variante b:{r = <Np : 0 ≤ p < varr : A.p ≥ 0> ^ 0 ≤ varr ≤ M ^ M/=varr ^ M - varr = A}if{M - varr < A} 	def wp y wp if
+--	r = <Np : 0 ≤ p < varr : A.p ≥ 0> ^ 0 ≤ varr ≤ M ^ M/=varr ^ M - varr = A ->(A.p ≥ 0 v A.p < 0) ^ (A.p ≥ 0 -> wp.r,varr:=r + 1,varr + 1.{M - varr < A}) ^ (A.p < 0 -> wp.r,varr:=r,varr + 1.{M - varr < A})		aritmetica y p ^ True = p y wp asig
+--	r = <Np : 0 ≤ p < varr : A.p ≥ 0> ^ 0 ≤ varr ≤ M ^ M/=varr ^ M - varr = A ->(A.p ≥ 0 -> M - (varr + 1) < A) ^ (A.p < 0 -> M - (varr + 1) < A) 	aritmetica y asocio
+--	(A.p ≥ 0 -> (M -varr) - 1 < A) ^ (A.p < 0 -> (M -varr) - 1 < A)		reemplazo A = (M - varr)
+--	(A.p ≥ 0 -> A - 1 < A) ^ (A.p < 0 -> A - 1 < A)		aritmetica
+--	True
+--	r = <Np : 0 ≤ p < varr : A.p ≥ 0> ^ 0 ≤ varr ≤ M ^ M/=varr ^ M - varr = A -> True 		p->True = True
 --	True
 --
 --
@@ -465,6 +495,14 @@
 --
 --
 --
+--z= Min n:1 ≤ n ∧ n mod x = 0 ∧ n mod y = 0:n
+--1 ≤ z ∧ z mod x = 0 ∧ z mod y = 0 ^ <Vn:1 ≤ n ∧ (n mod x = 0 ∧ n mod y = 0):z<=n>
+--1 ≤ z ∧ z mod x = 0 ∧ z mod y = 0 ^ <Vn:1 ≤ n :(n mod x = 0 ∧ n mod y = 0) -> z<=n>
+--1 ≤ z ∧ z mod x = 0 ∧ z mod y = 0 ^ <Vn:1 ≤ n :(n mod x = 0 ∧ n mod y = 0) v z>n>
+--1 ≤ z ∧ z mod x = 0 ∧ z mod y = 0 ^ <Vn:1 ≤ n :z>n v (n mod x = 0 ∧ n mod y = 0)>
+--1 ≤ z ∧ z mod x = 0 ∧ z mod y = 0 ^ <Vn:1 ≤ n :z>n -> n mod x /= 0 ∧ n mod y /= 0>
+--1 ≤ z ∧ z mod x = 0 ∧ z mod y = 0 ^ <Vn:1 ≤ n ^ z>n :n mod x /= 0 ∧ n mod y /= 0>
+--1 ≤ z ∧ z mod x = 0 ∧ z mod y = 0 ^ <Vn:1 ≤ n < z :n mod x /= 0 ∧ n mod y /= 0>
 --
 --
 --
@@ -473,8 +511,222 @@
 --
 --
 --
+--Ej 5		 1 ≤ z ∧ z mod x = 0 ∧ z mod y = 0  ∧ <V n : 1 ≤ n ∧ n mod x = 0 ∧ n mod y = 0 : z ≤ n>
+--Pre:{x>0 ^ y>0}
 --
---Ej 5		(Min n : 1 ≤ n ∧ n mod x = 0 ∧ n mod y = 0 : n) = (1 ≤ m ∧ m mod x = 0 ∧ m mod y = 0) ^ < Vn: 1 ≤ n ∧ n mod x = 0 ∧ n mod y = 0 : m<=n >
+--pos:{1 ≤ z ∧ (z mod x = 0 ∧ z mod y = 0) ^ <Vn:1 ≤ n < z :n mod x /= 0 ∧ n mod y /= 0>}
+--
+--Inv:1 ≤ z ∧ <Vn:1 ≤ n < z :n mod x /= 0 ∧ n mod y /= 0>
+--
+--
+--Inicia: {x>0 ^ y>0}S'{1 ≤ z ∧ <Vn:1 ≤ n < z :n mod x /= 0 ∧ n mod y /= 0>} planteo S': z=1 y def wp y asig
+--x>0 ^ y>0 -> 1 ≤ 1 ∧ <Vn:1 ≤ n < 1 :n mod x /= 0 ∧ n mod y /= 0> 	rango vacio y aritmetica
+--True
+------------------------------------------------
+--{x>0 ^ y>0}
+--z:=1
+--{1 ≤ z ∧ (z mod x = 0 ∧ z mod y = 0) ^ <Vn:1 ≤ n < z :n mod x /= 0 ∧ n mod y /= 0>}
+------------------------------------------------
+--post: 1 ≤ z ∧ <Vn:1 ≤ n < z :n mod x /= 0 ∧ n mod y /= 0> ^ ¬B -> 1 ≤ z ∧ (z mod x = 0 ∧ z mod y = 0) ^ <Vn:1 ≤ n < z :n mod x /= 0 ∧ n mod y /= 0> propongo ¬B: (z mod x = 0 ∧ z mod y = 0)
+--1 ≤ z ∧ <Vn:1 ≤ n < z :n mod x /= 0 ∧ n mod y /= 0> ^ (z mod x = 0 ∧ z mod y = 0) 
+--
+------------------------------------------------
+--{x>0 ^ y>0}
+--z:=1
+--do (z mod x /= 0 ∧ z mod y /= 0) -> S0 od
+--{1 ≤ z ∧ (z mod x = 0 ∧ z mod y = 0) ^ <Vn:1 ≤ n < z :n mod x /= 0 ∧ n mod y /= 0>}
+------------------------------------------------
+--inv:{1 ≤ z ∧ <Vn:1 ≤ n < z :n mod x /= 0 ∧ n mod y /= 0> ^ (z mod x /= 0 ∧ z mod y /= 0)}S0{1 ≤ z ∧ <Vn:1 ≤ n < z :n mod x /= 0 ∧ n mod y /= 0>} 	propongo S0: z:=z+m y def wp asig
+--1 ≤ z ∧ <Vn:1 ≤ n < z :n mod x /= 0 ∧ n mod y /= 0> ^ (z mod x /= 0 ∧ z mod y /= 0) -> 1 ≤ z+m ∧ <Vn:1 ≤ n < z+m :n mod x /= 0 ∧ n mod y /= 0> 
+--1 ≤ z+m ∧ <Vn:1 ≤ n < z+m :n mod x /= 0 ∧ n mod y /= 0> 	particion de rango	
+--1 ≤ z+m ∧ <Vn:1 ≤ n < z :n mod x /= 0 ∧ n mod y /= 0> ^ <Vn:z ≤ n < z+m :n mod x /= 0 ∧ n mod y /= 0> 	propngo m=1
+--1 ≤ z+1 ∧ <Vn:1 ≤ n < z :n mod x /= 0 ∧ n mod y /= 0> ^ <Vn:z ≤ n < z+1 :n mod x /= 0 ∧ n mod y /= 0> leibniz y aritmetica
+-- <Vn:z ≤ n < z+1 :n mod x /= 0 ∧ n mod y /= 0> 	rango unitario
+--z mod x /= 0 ∧ z mod y /= 0 	leibniz
+--True
+------------------------------------------------
+--{x>0 ^ y>0}
+--z:=1
+--do (z mod x /= 0 ∧ z mod y /= 0) -> z:=z+1 od
+--{1 ≤ z ∧ (z mod x = 0 ∧ z mod y = 0) ^ <Vn:1 ≤ n < z :n mod x /= 0 ∧ n mod y /= 0>}
+------------------------------------------------
+--var a: 1 ≤ z ∧ <Vn:1 ≤ n < z :n mod x /= 0 ∧ n mod y /= 0> ^ (z mod x /= 0 ∧ z mod y /= 0) -> v>=0 propongo v=(x*y)-z
+--(x*y)-z>=0 	arit
+--x*y>=z 	arit
+--True
+--Var b:{1 ≤ z ∧ <Vn:1 ≤ n < z :n mod x /= 0 ∧ n mod y /= 0> ^ (z mod x /= 0 ∧ z mod y /= 0) ^ (x*y)-z = A}z:=z+1{(x*y)-z < A}	def wp asig
+--(x*y)-z-1 < A 	aritmetica y (x*y)-z = A
+--A< A + 1 	arit
+--True
+--
+--Sea N ≥ 0
+--1. Derivar un programa que calcule el menor entero x que satisface x^3 + x ≥ N,x=<Min i : 0<=i ^ i^3 + i ≥ N :i>
+--0<=x ^ x^3 + x ≥ N ^ <V i : 0<=i ^ i^3 + i ≥ N :x<=i>
+--0<=x ^ x^3 + x ≥ N ^ <V i : 0<=i :i^3 + i ≥ N ->x<=i>
+--0<=x ^ x^3 + x ≥ N ^ <V i : 0<=i :i^3 + i ≥ N v x>i>
+--0<=x ^ x^3 + x ≥ N ^ <V i : 0<=i : x>i v i^3 + i ≥ N>
+--0<=x ^ x^3 + x ≥ N ^ <V i : 0<=i : x>i -> i^3 + i < N>
+--0<=x ^ x^3 + x ≥ N ^ <V i : 0<=i ^ x>i : i^3 + i < N>
+--0<=x ^ x^3 + x ≥ N ^ <V i : 0<=i<x : i^3 + i < N>
+--pre:{N>=0}
+--pos:0<=x ^ x^3 + x ≥ N ^ <V i : 0<=i<x : i^3 + i < N>
+--inv:0<=x ^ <V i : 0<=i<x : i^3 + i < N>
+--
+--inicializacion: {N>=0}S'{0<=x ^ <V i : 0<=i<x : i^3 + i < N>} propongo S': x:=0 y def wp y asig
+--N>=0 -> 0<=0 ^ <V i : 0<=i<0 : i^3 + i < N> 	rango vacio y arit
+--True
+-------------------------------------------------
+--{N>=0}
+--x:=0
+--{0<=x ^ x^3 + x ≥ N ^ <V i : 0<=i<x : i^3 + i < N>}
+-------------------------------------------------
+--poscondicion: 0<=x ^ <V i : 0<=i<x : i^3 + i < N> ^ ¬B -> 0<=x ^ x^3 + x ≥ N ^ <V i : 0<=i<x : i^3 + i < N> propongo ¬B: x^3 + x ≥ N
+--0<=x ^ <V i : 0<=i<x : i^3 + i < N> ^ x^3 + x ≥ N -> 0<=x ^ x^3 + x ≥ N ^ <V i : 0<=i<x : i^3 + i < N>
+--True
+-------------------------------------------------
+--{N>=0}
+--x:=0
+--do x^3 + x < N -> S0 od
+--{0<=x ^ x^3 + x ≥ N ^ <V i : 0<=i<x : i^3 + i < N>}
+-------------------------------------------------
+--invariante: {0<=x ^ <V i : 0<=i<x : i^3 + i < N> ^ x^3 + x < N}S0{0<=x ^ <V i : 0<=i<x : i^3 + i < N>} propongo S0: x:=x+m y def wp y asig
+--0<=x+m ^ <V i : 0<=i<x+m : i^3 + i < N> 	particion de rango
+--0<=x+m ^ <V i : 0<=i<x : i^3 + i < N> ^ <V i : x<=i<x+m : i^3 + i < N> 		propongo m=1
+--0<=x+1 ^ <V i : 0<=i<x : i^3 + i < N> ^ <V i : x<=i<x+1 : i^3 + i < N> 	leibniz,arit, y rango unitario
+--True ^ True ^ x^3 + x < N 	leibniz y logica
+--True
+-------------------------------------------------
+--{N>=0}
+--x:=0
+--do x^3 + x < N -> x:=x+1 od
+--{0<=x ^ x^3 + x ≥ N ^ <V i : 0<=i<x : i^3 + i < N>}
+-------------------------------------------------
+--var a: 0<=x ^ <V i : 0<=i<x : i^3 + i < N> ^ x^3 + x < N -> v>=0 		propongo v: N-x
+--0<=x ^ <V i : 0<=i<x : i^3 + i < N> ^ x^3 + x < N -> N-x>=0 	arit
+--0<=x ^ <V i : 0<=i<x : i^3 + i < N> ^ x^3 + x < N -> N>=x 	arit
+--True
+--var b: {0<=x ^ <V i : 0<=i<x : i^3 + i < N> ^ x^3 + x < N ^ N-x=A}x:=x+1{N-x<A} 	def wp y asig
+--N-x-1<A 	N-x=A
+--A-1<A 	arit
+--A<A+1
+--True
+--
+--
+--
+--2. Derivar un programa que calcule el mayor entero x que satisface x^3 + x ≤ N , x=<Max i :0<=i ^ i^3 + i ≤ N:i>
+--0<=x ^ x^3 + x ≤ N ^ <Vi:0<=i ^ i^3 + i ≤ N:i<=x>
+--0<=x ^ x^3 + x ≤ N ^ <Vi:0<=i : i^3 + i ≤ N -> i<=x>
+--0<=x ^ x^3 + x ≤ N ^ <Vi:0<=i : i^3 + i ≤ N v i>x>
+--0<=x ^ x^3 + x ≤ N ^ <Vi:0<=i : i>x v i^3 + i ≤ N>
+--0<=x ^ x^3 + x ≤ N ^ <Vi:0<=i : i>x -> i^3 + i > N>
+--0<=x ^ x^3 + x ≤ N ^ <Vi:0<=i ^ i>x : i^3 + i > N>
+--0<=x ^ x^3 + x ≤ N ^ <Vi:0<=x<i : i^3 + i > N>
+--
+--Derivar un programa que guarde en una variable el máximo elemento de un arreglo de enteros. r=<Max i : 0<=i<M : A.i>
+--pre:{M>=0}
+--pos:{r=<Max i : 0<=i<M : A.i>}
+--inv{r=<Max i : 0<=i<m : A.i> ^ 0<=m<=M}
+--inicializacion:{M>=0}S'{r=<Max i : 0<=i<m : A.i> ^ 0<=m<=M}	propongo S': r,m:=-inf,0 def wp y asig
+--M>=0 -> -inf=<Max i : 0<=i<0 : A.i> ^ 0<=0<=M 	rango vacio y arit
+--M>=0 -> -inf=-inf ^ True 		logica
+--True
+--
+------------------------------------------------------
+--M : Int, A : Array[0..M )of Int
+--r : Int
+--{M>=0}
+--r,m:=-inf,0
+--{r=<Max i : 0<=i<M : A.i>}
+------------------------------------------------------
+--
+--postcondicion: r=<Max i : 0<=i<m : A.i> ^ 0<=m<=M ^ ¬B -> r=<Max i : 0<=i<M : A.i> propongo ¬B: M=m y B: M/=m
+--r=<Max i : 0<=i<m : A.i> ^ 0<=m<=M ^ M=m -> r=<Max i : 0<=i<M : A.i>
+--r=<Max i : 0<=i<m : A.i> ^ 0<=m<=M ^ M=m
+--r=<Max i : 0<=i<M : A.i>
+------------------------------------------------------
+--M : Int, A : Array[0..M )of Int
+--r : Int
+--{M>=0}
+--r,m:=-inf,0
+--do M/=m -> S0 od
+--{r=<Max i : 0<=i<M : A.i>}
+------------------------------------------------------
+--inv: {r=<Max i : 0<=i<m : A.i> ^ 0<=m<=M ^ M/=m}S0{r=<Max i : 0<=i<m : A.i> ^ 0<=m<=M} 	propongo S0: r,m:=F,m+n , def wp y asig
+--F=<Max i : 0<=i<m+n : A.i> ^ 0<=m+n<=M 	particion de rango
+--F=(max(<Max i : 0<=i<m : A.i>,<Max i : m<=i<m+n : A.i>) ^ 0<=m+n<=M  	propongo n=1 y def r
+--F=(max(r,<Max i : m<=i<m+1 : A.i>) ^ 0<=m+1<=M 	rango unitario
+--F=(max(r,A.m) ^ 0<=m+1<=M 	aritmetica
+--F=(max(r,A.m)
+------------------------------------------------------
+--M : Int, A : Array[0..M )of Int
+--r : Int
+--{M>=0}
+--r,m:=-inf,0
+--do M/=m -> r,m:= max(r,A.m),m+1 od
+--{r=<Max i : 0<=i<M : A.i>}
+------------------------------------------------------
+--var a: r=<Max i : 0<=i<m : A.i> ^ 0<=m<=M ^ M/=m -> v>=0 		propongo v: M-m
+--r=<Max i : 0<=i<m : A.i> ^ 0<=m<=M ^ M/=m -> M-m>=0 	aritmetica
+--r=<Max i : 0<=i<m : A.i> ^ 0<=m<=M ^ M/=m -> M>=m 	aritmetica
+--True
+--
+--var b:{r=<Max i : 0<=i<m : A.i> ^ 0<=m<=M ^ M/=m ^ M-m=A}r,m:= max(r,A.m),m+1{M-m<A} 	def wp y asig
+--M-m-1<A 	aritmetica y A=M-m
+--A<A+1 	aritmetica
+--True
+--
+--Derivar un programa que calcule la cantidad de elementos pares de un arreglo de enteros. r=<Ni:0<=i<M ^ A.i mod 2 == 0:1>
+--pre:{M>=0}
+--pos:{r=<Ni:0<=i<M ^ A.i mod 2 == 0:1>}
+--inv:{r=<Ni:0<=i<m ^ A.i mod 2 == 0:1> ^ 0<=m<=M}
+--inicializacion:{M>=0}S'{r=<Ni:0<=i<m ^ A.i mod 2 == 0:1> ^ 0<=m<=M} propongo S': r,m:=0,0 def wp y asig
+--0=<Ni:0<=i<0 ^ A.i mod 2 == 0:1> ^ 0<=0<=M 	rango vacio y leibniz
+--0=0 ^ True 	aritmetica
+--True
+------------------------------------------------------
+--M : Int, A : Array[0..M )of Int
+--r : Int
+--{M>=0}
+--r,m:=0,0
+--{r=<Ni:0<=i<M ^ A.i mod 2 == 0:1>}
+------------------------------------------------------
+--postcondicion: r=<Ni:0<=i<m ^ A.i mod 2 == 0:1> ^ 0<=m<=M ^ ¬B -> r=<Ni:0<=i<M ^ A.i mod 2 == 0:1> 	propongo ¬B: M=m y B: M /= m
+--r=<Ni:0<=i<m ^ A.i mod 2 == 0:1> ^ 0<=m<=M ^ M=m 	reemplazo
+--r=<Ni:0<=i<M ^ A.i mod 2 == 0:1>
+------------------------------------------------------
+--M : Int, A : Array[0..M )of Int
+--r : Int
+--{M>=0}
+--r,m:=0,0
+--do M /= m -> S0 od
+--{r=<Ni:0<=i<M ^ A.i mod 2 == 0:1>}
+------------------------------------------------------
+--invariante: {r=<Ni:0<=i<m ^ A.i mod 2 == 0:1> ^ 0<=m<=M ^ M /= m}S0{r=<Ni:0<=i<m ^ A.i mod 2 == 0:1> ^ 0<=m<=M} propongo S0: r,m:=E,m+n y def wp y asig
+--E=<Ni:0<=i<m+n ^ A.i mod 2 == 0:1> ^ 0<=m+n<=M 	particion de rango
+--E=(<Ni:0<=i<m ^ A.i mod 2 == 0:1> + <Ni:m<=i<m+n ^ A.i mod 2 == 0:1>) ^ 0<=m+n<=M 	propongo n=1 y leibniz
+--E=(r + <Ni:m<=i<m+1 ^ A.i mod 2 == 0:1>) ^ 0<=m+1<=M 		rango unitario y aritmetica(0<=m+1<=M = 0<=m<M)
+--E=(r + 1)
+------------------------------------------------------
+--M : Int, A : Array[0..M )of Int
+--r : Int
+--{M>=0}
+--r,m:=0,0
+--do M /= m -> r,m:=r+1,m+1 od
+--{r=<Ni:0<=i<M ^ A.i mod 2 == 0:1>}
+------------------------------------------------------
+--var a: r=<Ni:0<=i<m ^ A.i mod 2 == 0:1> ^ 0<=m<=M ^ M /= m -> v>=0 propongo v: M-m
+--M-m>=0 	aritmetica
+--M>=m 	leibniz
+--True
+--var b: {r=<Ni:0<=i<m ^ A.i mod 2 == 0:1> ^ 0<=m<=M ^ M /= m ^ M-m=A}r,m:=r+1,m+1{M-m<A} 	def wp y asig
+--M-m-1<A 	def A y aritmetica
+--A<A+1 	aritmetica
+--True
+--
+--
+--
+--
+--
 --
 --
 --

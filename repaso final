@@ -1,0 +1,509 @@
+Especificacion:
+
+1-Suponiendo que #xs > 1 y que existen al menos dos valores distintos en xs: “x es el segundo valor más grande de xs”. (Ejemplo: si xs = [3, 6, 1, 7, 6, 4, 7], debe resultar x = 6) .
+
+(Maxi:0<=i<#xs:A.i>)
+x=<Maxj:0<=j<#xs ^ (Maxi:0<=i<#xs:A.i>)> A.j:A.j>
+
+2-“s es la suma de los elementos de xs”.	s=<Ei:0<=i<#xs:A.i>
+3-Dado un entero X: “n es la cantidad de veces que X aparece en xs”.  n=<Ci:0<=i<#xs ^ X=A.i:1>
+4-“Todos los valores de xs son distintos”.	<Vi:0<=i<#xs:A.i/=A.i+1>
+5-“Si el 1 está en xs, entonces también el 0 está en xs” <Ei:0<=i<#xs ^ A.i=1:(Ej:0<=j<#xs:A.j=0)>
+6-“p es el producto de todos los valores positivos de xs”.	p=<TTi:0<=i<#xs ^ A.i>=0:A.i>
+7-Dado un entero x: “p es un booleano cuyo valor de verdad coincide con el de la afirmación x ∈ xs”.
+	p=<Ei:0<=i<#xs:x=A.i>
+
+Sea xs una lista no vacı́a, con elementos booleanos, tal que al menos un elemento de xs es True. Expresar en lenguaje formal:
+1- “n es el menor entero tal que xs.n = True”.	n=<Minj:0<=j<#xs ^ xs.j=True:j>
+2- “n indica la posición del último elemento de la lista que es equivalente a True”	n=<Maxj:0<=j<#xs ^ xs.j=True:j>
+
+Sea xs una lista no vacı́a.
+1- Especificar: “xs es creciente”.	<Vi:0<=i<#xs:A.i<=A.i+1>
+2- Especificar y demostrar: “si xs escreciente, entonces el primer elemento es el menor”.
+	<Vj:0<=j<#xs:A.j<=A.j+1 ^ A.0<=A.j>
+
+Especificar las siguientes funciones:
+1- f : [Num] -> Bool
+   f.xs determina si xs contiene igual cantidad de elementos pares que impares.
+   <Ci:0<=i<#xs ^ (A.i mod 2) == 0:1> == <Ci:0<=i<#xs ^ (A.i mod 2) /= 0:1>
+2. cp : [Num] -> Num
+   cp.xs determina la cantidad de números pares que contiene xs.
+   <Ci:0<=i<#xs ^ (A.i mod 2) == 0:1>
+3. g : Num -> [Num] -> Bool
+   g.k.xs determina si el k-ésimo elemento de xs aloja el máximo valor de xs.
+   A.k == <Maxj:0<=j<#xs:A.j>
+4. f.xs.ys determina si ys es una subsecuencia de xs.
+	<Eas,bs,cs:xs=as++bs++cs:bs=ys>
+5. f.xs.ys determina si ys es una subsecuencia final de xs.
+	<Eas,bs,cs:xs=as++bs++cs:cs=ys>
+6. f.xs.ys determina si ys es una subsecuencia inicial de xs.
+	<Eas,bs,cs:xs=as++bs++cs:as=ys>
+7. Dada una lista de enteros, especifique la suma del subsegmento de suma mı́nima de la lista. Por ejemplo, si la lista es xs = [1, −4, −2, 1, −5, 8, −7] el subsegmento que da la suma mı́nima es [−4, −2, 1, −5], cuya suma es -10. Si xs = [1, 3, 5] , el subsegmento que da la suma mı́nima es [] , pues la suma de la lista vacı́a es cero.
+	<Minas,bs,cs:as++bs++cs=xs:sum(bs)>
+8.Especifique la funcin maxigual que determina la longitud del máximo sub-segmento en donde todos sus elementos son iguales: maxigual : [A] −> Num.
+	<Maxas,bs,cs:as++bs++cs=xs ^ <Vi:0<=i<#xs:xs.0==xs.i>:#bs>
+9. Especifique la función maxdistinto : [Int] −> Int que determina la longitud del subsegmento más largo en donde todos los elementos son distintos.
+	<Maxas,bs,cs:as++bs++cs=xs ^ <Vi:0<=i<#xs-1:xs.i/=xs.i+1>:#bs>
+
+
+<Mini:R.i:¬E.i> = ¬<Maxi:R.i:F.i>
+sea z = <Mini:R.i:¬E.i>
+z = <Mini:R.i:¬E.i> 		def MIN
+<Ei : R.i : z = ¬E.i> ∧ <Vi : R.i : z ≤ ¬E.i> 	despejo ¬
+<Ei : R.i : ¬z = E.i> ∧ <Vi : R.i : ¬z >= E.i> 	def Max
+¬z = <Maxi:R.i:E.i> 	despejo ¬
+z = ¬<Maxi:R.i:E.i>
+z = <Mini:R.i:¬E.i> y z = ¬<Maxi:R.i:E.i> entonces <Mini:R.i:¬E.i> = ¬<Maxi:R.i:F.i>
+
+Induccion-Derivacion:
+
+Especificar y derivar la función iguala : [A] -> A -> Bool que verifica si todos los elementos de una lista son iguales a un valor dado.
+f.xs.a=<Vi:0<=i<#xs:a=xs.i>
+caso base xs=[]
+<Vi:0<=i<#[]:a=[].i>	def #
+<Vi:0<=i<0:a=[].i>		rango vacio
+True
+Etapa Inductiva xs=(x:xs)
+<Vi:0<=i<#(x:xs):a=(x:xs).i>	def lista y #
+<Vi:0<=i<#1+xs:a=(x:xs).i>		particion de rango
+<Vi:0<=i<1:a=(x:xs).i> ^ <Vi:1<=i<#1+xs:a=(x:xs).i>		rango unitario y i=j + 1
+a=x ^ <Vj:1<=j+1<#1+xs:a=(x:xs).j+1>	resto 1
+a=x ^ <Vj:0<=j<#xs:a=(x:xs).j+1>	def index
+a=x ^ <Vj:0<=j<#xs:a=xs.j>	H.I
+a=x ^ f.xs.a
+
+f.[].a = True
+f.(x:xs).a = a=x ^ f.xs.a
+
+Sea m : [Int] -> Int la función que devuelve el mı́nimo elemento de una lista de enteros. Obtener una definición recursiva para m.
+m.xs=<Mini:0<=i<#xs:xs.i>
+caso base xs=[]
+<Mini:0<=i<#[]:[].i>	def #
+<Mini:0<=i<0:[].i>		rango vacio
+0
+Etapa Inductiva xs=(x:xs)
+<Mini:0<=i<#(x:xs):(x:xs).i>	def lista y #
+<Mini:0<=i<1+#xs:(x:xs).i>		particion de rango
+min(<Mini:0<=i<1:(x:xs).i>,<Mini:1<=i<1+#xs:(x:xs).i>)	i=j+1 y rango unitario
+min(x,<Minj:1<=j+1<1+#xs:(x:xs).j+1>)		resto 1
+min(x,<Minj:0<=j<#xs:(x:xs).j+1>)		def index
+min(x,<Minj:0<=j<#xs:xs.j>)		H.I
+min(x,m.xs)
+
+m.[] = 0
+m.(x:xs)= min(x,m.xs)
+
+Calcular la función de fibolucci especificada como sigue: f : Nat -> Nat | f.n = <Si : 0 ≤ i < n : fib.i ∗ fib.(n − i)>
+caso base n=0
+<Si : 0 ≤ i < 0 : fib.i ∗ fib.(n − i)>	rango vacio
+0
+etapa inductiva n=n+1
+<Si : 0 ≤ i < n+1 : fib.i ∗ fib.(n+1 − i)>		particion de rango
+<Si : 0 ≤ i < n : fib.i ∗ fib.(n+1 − i)> + <Si : n ≤ i < n+1 : fib.i ∗ fib.(n+1 − i)> 	rango unitario
+<Si : 0 ≤ i < n : fib.i ∗ fib.(n+1 − i)> + fib.n 
+
+modularizo g.n= <Si : 0 ≤ i < n : fib.i ∗ fib.(n+1 − i)>
+caso base n=0
+<Si : 0 ≤ i < 0 : fib.i ∗ fib.(n+1 − i)>	rango vacio
+0
+etapa inductivca n=n+1
+<Si : 0 ≤ i < n+1 : fib.i ∗ fib.(n+2 − i)>
+
+
+
+Demostrar que la concatenación de listas es asociativa: (xs ++ ys) ++ zs = xs ++ (ys ++ zs)
+
+def ++
+xs ++ [] = xs
+[] ++ ys = ys
+(x:xs) ++ ys = x:(xs++ys)
+
+
+caso base xs=[]
+([] ++ ys) ++ zs		||	[] ++ (ys ++ zs)
+def ++					||	def ++
+ys++zs					||	ys ++ zs
+					True
+Etapa inductivca	xs = (x:xs)
+((x:xs) ++ ys) ++ zs 	||	(x:xs) ++ (ys ++ zs)
+def ++					||	def ++
+x:(xs++ys)++zs			||	x:(xs++(ys++zs))
+						||	HI
+						||	x:(xs++ys)++zs
+					True
+
+Especificar y derivar la siguiente función: f xs dice si todos los elementos son iguales
+f.xs=<Vi:0<=i<#xs:xs.0==xs.i>
+caso base xs=[]
+<Vi:0<=i<#[]:[].0==[].i>	def # y rango vacio
+True
+etapa inductiva xs=(x:xs)
+<Vi:0<=i<#(x:xs):(x:xs).0==(x:xs).i>	def # y particion de rango
+<Vi:0<=i<1:(x:xs).0==(x:xs).i> ^ <Vi:1<=i<1+#xs:(x:xs).0==(x:xs).i>	rango unitario y i=i+1
+True ^ <Vi:1<=i+1<1+#xs:(x:xs).0==(x:xs).i+1>	resto 1
+<Vi:0<=i<#xs:(x:xs).0==(x:xs).i+1>	def index
+<Vi:0<=i<#xs:x==xs.i>
+modularizo g.xs=<Vi:0<=i<#xs:x==xs.i>
+
+caso base xs=[]
+<Vi:0<=i<#[]:x==[].i>	def # y rango vacio
+True
+etapa inductiva xs=(x:xs)
+<Vi:0<=i<#(x:xs):x==(x:xs).i>	def # y particion de rango
+<Vi:0<=i<1:x==(x:xs).i> ^ <Vi:1<=i<1+#xs:x==(x:xs).i>	i=i+1 y rango unitario
+True ^ <Vi:1<=i+1<1+#xs:x==(x:xs).i+1>	resto 1
+<Vi:0<=i<#xs:x==(x:xs).i+1>		def index
+<Vi:0<=i<#xs:x==xs.i>	HI
+True ^ g.xs
+
+volvemos a f
+<Vi:0<=i<#xs:x==xs.i>
+g.xs
+
+f.[]=True
+f.(x:xs) = True ^ g.xs
+
+Especificar y derivar una función que dada una lista de números devuelva su producto.
+f.xs=<TTi:0<=i<#xs:xs.i>
+caso base xs=[]
+<TTi:0<=i<#[]:[].i>	def # y rango vacio
+1
+etapa inductiva xs=(x:xs)
+<TTi:0<=i<#(x:xs):(x:xs).i>		def # y particion de rango
+<TTi:0<=i<1:(x:xs).i> * <TTi:1<=i<1+#xs:(x:xs).i>	rango unitario y i=i+1
+x * <TTi:1<=i+1<1+#xs:(x:xs).i+1>	resto 1
+x * <TTi:0<=i<#xs:(x:xs).i+1>	def index
+x * <TTi:0<=i<#xs:xs.i>		HI
+x * f.xs
+
+f.[]=1
+f.(x:xs)=x * f.xs
+
+Derivar una función que dada una lista determina si los elementos están ordenados de forma creciente.
+f.xs=<Vi:0<=i<#xs-1:xs.i<=xs.i+1>
+caso base xs=[]
+<Vi:0<=i<#[]-1:[].i<=[].i+1>	def # y rango vacio
+True
+etapa inductiva xs=(x:xs)
+<Vi:0<=i<#(x:xs)-1:(x:xs).i<=(x:xs).i+1>	def #
+<Vi:0<=i<#xs:(x:xs).i<=(x:xs).i+1>	particion de rango
+<Vi:0<=i<1:(x:xs).i<=(x:xs).i+1> ^ <Vi:1<=i<#xs:(x:xs).i<=(x:xs).i+1>	rango unitario y i=i+1
+x<=(x:xs).1 ^ <Vi:1<=i+1<#xs:(x:xs).i+1<=(x:xs).i+2>	resto 1
+x<=(x:xs).1 ^ <Vi:0<=i<#xs-1:(x:xs).i+1<=(x:xs).i+2>	def index
+x<=(x:xs).1 ^ <Vi:0<=i<#xs-1:xs.i<=xs.i+1>	HI
+x<=(x:xs).1 ^ f.xs
+
+f.[]=True
+f.(x:xs)=x<=(x:xs) ^ f.xs
+
+Sea m : [Num] -> [Num] una función que devuelve el mı́nimo de una lista dada. Especificar y derivar m.
+m.xs=<Mini:0<=i<#xs:xs.i>
+caso base xs=[]
+<Mini:0<=i<#[]:[].i>	def # y rango vacio
++inf
+etapa inductivca xs=(x:xs)
+<Mini:0<=i<#(x:xs):(x:xs).i>	def # y particion de rango
+min(<Mini:0<=i<1:(x:xs).i>,<Mini:1<=i<1+#xs:(x:xs).i>)	rango unitario y i=i+1
+min(x,<Mini:1<=i+1<1+#xs:(x:xs).i+1>)	resto 1
+min(x,<Mini:0<=i<#xs:(x:xs).i+1>)	def index
+min(x,<Mini:0<=i<#xs:xs.i>)	HI
+min(x,m.xs)
+
+m.[]=+inf
+m.(x:xs)=min(x,m.xs)
+
+
+Especificar y derivar una función que dada una lista determine si existe un elemento en ella que sea igual a la suma del resto de los elementos de la lista.
+
+f.xs=<Ei:0<=i<#xs:xs.i=<S.j:i<j:xs.j>>
+caso base xs=[]
+<Ei:0<=i<#[]:[].i=<S.j:i<j:[].j>>	def # y rango vacio
+False
+etapa inductiva xs=(x:xs)
+<Ei:0<=i<#(x:xs):(x:xs).i=<S.j:i<j:(x:xs).j>>	def # y particion de rango
+<Ei:0<=i<1:(x:xs).i=<S.j:i<j:(x:xs).j>> v <Ei:1<=i<1+#xs:(x:xs).i=<S.j:i<j:(x:xs).j>>	rango unitario y i=i+1
+x=<S.j:0<j:(x:xs).j> v <Ei:1<=i+1<1+#xs:(x:xs).i+1=<S.j:i+1<j:(x:xs).j>>	resto 1
+x=<S.j:0<j:(x:xs).j> v <Ei:0<=i<#xs:(x:xs).i+1=<S.j:i+1<j:(x:xs).j>>	def index
+x=<S.j:0<j:(x:xs).j> v <Ei:0<=i<#xs:xs.i=<S.j:i+1<j:(x:xs).j>>			j=j+1
+x=<S.j:0<j:(x:xs).j> v <Ei:0<=i<#xs:xs.i=<S.j:i+1<j+1:(x:xs).j+1>>		resto 1
+x=<S.j:0<j:(x:xs).j> v <Ei:0<=i<#xs:xs.i=<S.j:i<j:(x:xs).j+1>>		def index
+x=<S.j:0<j:(x:xs).j> v <Ei:0<=i<#xs:xs.i=<S.j:i<j:xs.j>>		HI
+x=<S.j:0<j:(x:xs).j> v f.xs
+
+f.[]=False
+f.(x:xs)= x=<S.j:0<j:(x:xs).j> v f.xs
+
+
+Derivar un programa usando la siguiente especificación: P.xs.ys = (∃as, bs :: ys = as + +xs + +bs)
+caso base 1 xs=[]
+∃as, bs :: ys = as + + [] + +bs 	def ++
+∃as, bs :: ys = as + + bs 	particion de rango(as=[] o as=(a:as))
+∃as, bs :as=[]: ys = as + + bs v ∃as, bs :as=(a:as): ys = as + + bs 	rango unitario
+∃as, bs :: ys = [] + + bs v ∃as, bs :as=(a:as): ys = as + + bs 		def ++ y intercambio rango con termino
+∃as, bs :ys = bs:  v ∃as, bs :as=(a:as): ys = as + + bs 	termino = True
+True v ∃as, bs :as=(a:as): ys = as + + bs 
+True
+caso base 2 xs=(x:xs) ys=[]
+∃as, bs :: [] = as + + (x:xs) + + bs	def listas
+∃as, bs :: [] = as ^ [] = (x:xs) ^ [] = bs 		def lista
+∃as, bs :: [] = as ^ False ^ [] = bs 		Logica
+∃as, bs :: False		termino constante
+False
+caso inductivo	xs=(x:xs) ys=(y:ys)
+∃as, bs :: (y:ys) = as + + (x:xs) + + bs 		particion de rango(as=[] o as=(a:as))
+∃as, bs :as=[]: (y:ys) = as + + (x:xs) + + bs v ∃as, bs :as=a:as: (y:ys) = as + + (x:xs) + + bs 	rango unitario
+∃as, bs :: (y:ys) = [] + + (x:xs) + + bs v ∃a,as, bs :: (y:ys) = (a:as) + + (x:xs) + + bs 	def ++
+∃as, bs :: (y:ys) =(x:xs) + + bs 	v ∃a,as, bs :: (y:ys) = (a:as) + + (x:xs) + + bs 	def lista
+∃as, bs :: y=x ^ ys =(xs + + bs) v ∃a,as, bs :: y = a ^ ys = as + + (x:xs) + + bs 	distrib ^ respecto E e intercambio 
+y = x ^ ∃as, bs ::ys =(xs + + bs) v ∃a,as, bs :y = a:ys = as + + (x:xs) + + bs 	rango unitario
+y = x ^ ∃as, bs ::ys =(xs + + bs) v ∃as, bs ::ys = as + + (x:xs) + + bs 	HI
+y = x ^ ∃as, bs ::ys =(xs + + bs) v P.(x:xs).ys
+
+modularizo G.xs.ys = ∃bs ::ys = xs + + bs
+
+caso base 1 xs=[]
+∃bs ::ys =[] + + bs def ++
+∃bs ::ys = bs 	intercambio
+∃bs :ys = bs:True 	termino constante
+True
+
+caso base 2 xs=(x:xs) ys=[]
+∃bs ::[] =(x:xs) + + bs 	def lista
+∃bs ::[] = (x:xs) ^ [] = bs 	def lista
+∃bs ::False ^ [] = bs 		logica
+∃bs ::False 	termino constante
+False
+
+caso inductivo xs=(x:xs) ys=(y:ys)
+∃bs ::(y:ys) =(x:xs) + + bs 	def lista
+∃bs ::y = x ^ ys = xs + + bs 	intercambio
+∃bs :y = x:ys = xs + + bs 	rango unitario
+∃bs ::ys = xs + + bs 	HI
+G.xs.ys
+
+volvemos a y = x ^ ∃bs ::ys =(xs + + bs) v P.(x:xs).ys 	def G.xs.ys
+y = x ^ G.xs.ys v P.(x:xs).ys
+
+
+Especificar y derivar una función que dada una lista de números calcula el promedio de la misma, recorriendo la lista una sola vez (Ayuda: utilizar tuplas).
+
+f.xs=<Si:0<=i<#xs:xs.i>
+caso base xs=[]
+<Si:0<=i<#[]:[].i> 	def # y rango vacio
+0
+caso inductivo xs=(x:xs)
+<Si:0<=i<#(x:xs):(x:xs).i> 	def #
+<Si:0<=i<1+#xs:(x:xs).i> 	particion de rango
+<Si:0<=i<1:(x:xs).i> + <Si:1<=i<1+#xs:(x:xs).i> 	rango unitario y i=i+1
+x + <Si:1<=i+1<1+#xs:(x:xs).i+1> 	resto 1
+x + <Si:0<=i<#xs:(x:xs).i+1> 	def index
+x + <Si:0<=i<#xs:xs.i> 	HI
+x + f.xs
+
+f.[]=0
+f.(x:xs) = x + f.xs
+
+g.xs=<Ci:0<=i<#xs:1>
+caso base xs=[]
+<Ci:0<=i<#[]:1> 	def # y rango vacio
+0
+caso inductivo xs=(x:xs)
+<Ci:0<=i<#(x:xs):1> 	def #
+<Ci:0<=i<1 + #xs:1> 	particion de rango
+<Ci:0<=i<1:1> + <Ci:1<=i<1 + #xs:1> 	rango unitario y i=i+1
+1 + <Ci:1<=i+1<1 + #xs:1> 	resto 1
+1 + <Ci:0<=i<#xs:1> 	HI
+1 + g.xs
+
+g.[] = 0
+g.(x:xs) = 1 + g.xs
+
+h.xs = (f.xs,g.xs)	
+caso base xs=[x]
+(f.x,g.x) 	def f.x y g.x
+(x,1)
+caso inductivo xs = (x:xs)
+(f.(x:xs),g.(x:xs)) 		def f.(x:xs) y g.(x:xs)
+(x + f.xs,1 + g.xs) 		reemplazo
+(x + a,1 + b)
+[(a,b)=(f.xs,g.xs)]		HI
+(x + a,1 + b)
+[(a,b)=h.xs]	
+
+
+promedio xs = a/b
+	where [(a,b)=h.xs]
+
+programacion en imperativo
+
+
+
+z= Min n:1 ≤ n ∧ n mod x = 0 ∧ n mod y = 0:n
+1 ≤ z ∧ z mod x = 0 ∧ z mod y = 0 ^ <Vn:1 ≤ n ∧ (n mod x = 0 ∧ n mod y = 0):z<=n>
+1 ≤ z ∧ z mod x = 0 ∧ z mod y = 0 ^ <Vn:1 ≤ n :(n mod x = 0 ∧ n mod y = 0) -> z<=n>
+1 ≤ z ∧ z mod x = 0 ∧ z mod y = 0 ^ <Vn:1 ≤ n :(n mod x = 0 ∧ n mod y = 0) v z>n>
+1 ≤ z ∧ z mod x = 0 ∧ z mod y = 0 ^ <Vn:1 ≤ n :z>n v (n mod x = 0 ∧ n mod y = 0)>
+1 ≤ z ∧ z mod x = 0 ∧ z mod y = 0 ^ <Vn:1 ≤ n :z>n -> n mod x /= 0 ∧ n mod y /= 0>
+1 ≤ z ∧ z mod x = 0 ∧ z mod y = 0 ^ <Vn:1 ≤ n ^ z>n :n mod x /= 0 ∧ n mod y /= 0>
+1 ≤ z ∧ z mod x = 0 ∧ z mod y = 0 ^ <Vn:1 ≤ n < z :n mod x /= 0 ∧ n mod y /= 0>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+fll :: (b->a->b) -> b -> [a] -> b
+fll f z [] = z
+fll f z (x:xs) = fll f (f z x) xs
+
+flr :: (a->b->b) -> b -> [a] -> b
+flr f z [] = z
+flr f z (x:xs) = f x (flr f z xs)
+
+--foldr (&&) false [false,false,…] = false | 
+--foldl (&&) false [false,false,…] stack overflow
+
+foldr (&&) false [false,false,…] 	def flr
+false && (foldr && false [false,false,...]) 	logica
+False
+
+foldl (&&) false [false,false,…] 	def fll
+foldl (&&) (false && false) [false,false,..] logica
+foldl (&&) false [false,false,..] indefinido
+
+
+
+f.n=<S i:1<=i<=n ^ n mod i==0:i>
+caso base n=0
+<S i:1<=i<=0 ^ 0 mod i==0:i> 		rango vacio
+0
+caso inductivo n=n+1
+<S i:1<=i<=n+1 ^ n+1 mod i==0:i>
+
+x=<Max i:0<=i ^ 2^i<=N:2^i> = ∃ i : 0<=i ^ 2^i<=N : x = 2^i  ∧ V i : 0<=i ^ 2^i<=N : 2^i ≤ x
+
+pre:{N>=1}
+pos:{0<=x<N ^ 2^x<=N ^ <Vi:0<=i<N ^ 2^i<=N : 2^x>=2^i>}
+inv: {0<=x<N ^<Vi:0<=i<N ^ 2^i<=N : 2^x>=2^i>}
+
+inicializacion:{N>=1}S'{0<=x<N ^<Vi:0<=i<N ^ 2^i<=N : x>=2^i>}
+
+
+Derivar un programa para la siguiente especificación:
+-------------------------------------------------------------
+con M : Int, A : array[0, M ) of Int
+var r : Int
+{M ≥ 1}
+S'
+{r = <N p, q : 0 ≤ p < q < m : A.p ∗ A.q ≥ 0> ^ 1<=m<=M}
+do M/=m -> S0
+{r = <N p, q : 0 ≤ p < q < M : A.p ∗ A.q ≥ 0>}
+------------------------------------------------------------
+pre:{M ≥ 1}
+pos:{r = <N p, q : 0 ≤ p < q < M : A.p ∗ A.q ≥ 0>}
+inv:{r = <N p, q : 0 ≤ p < q < m : A.p ∗ A.q ≥ 0> ^ 1<=m<=M}
+
+
+invariante:{r = <N p, q : 0 ≤ p < q < m : A.p ∗ A.q ≥ 0> ^ 1<=m<=M ^ M/=m}S0{r = <N p, q : 0 ≤ p < q < m : A.p ∗ A.q ≥ 0> ^ 1<=m<=M} 	propongo S0: r,m:=E,m+1,def wp y asig
+E = <N p, q : 0 ≤ p < q < m+1 : A.p ∗ A.q ≥ 0> ^ 1<=m+1<=M 		aritmetica
+E = <N p, q : 0 ≤ p < q < m+1 : A.p ∗ A.q ≥ 0> 		particion de rango
+E = (<N p, q : 0 ≤ p < q < m : A.p ∗ A.q ≥ 0> + <N p, q : 0 ≤ p < q < m : A.p ∗ A.q ≥ 0>) 	def r
+E = (r + <N p, q : 0 ≤ p < q = m : A.p ∗ A.q ≥ 0>) 	rango unitario
+E = (r + <N p: 0 ≤ p < m : A.p ∗ A.m ≥ 0>)  como m>=1
+E = (r + (<N p: 0 ≤ p < m : A.p ≥ 0> * A.m)) introducimos s=<N p: 0 ≤ p < m : A.p ≥ 0> y fortalesemos el invariante
+E = (r + (s * A.m))
+-------------------------------------------------------------
+con M : Int, A : array[0, M ) of Int
+var r : Int
+{M ≥ 1}
+S'
+{r = <N p, q : 0 ≤ p < q < m : A.p ∗ A.q ≥ 0> ^ 1<=m<=M ^ s=<N p: 0 ≤ p < m : A.p ≥ 0>}
+do M/=m -> r,m,s:=r + (s * A.m),m+1,F
+{r = <N p, q : 0 ≤ p < q < M : A.p ∗ A.q ≥ 0>}
+-------------------------------------------------------------
+calculamos F
+{s=<N p: 0 ≤ p < m : A.p ≥ 0>}r,m,s:=r + (s * A.m),m+1,F{s=<N p: 0 ≤ p < m : A.p ≥ 0>} 	def wp
+F=<N p: 0 ≤ p < m+1 : A.p ≥ 0> 		particion de rango
+F=(<N p: 0 ≤ p < m : A.p ≥ 0> + <N p: m ≤ p < m+1 : A.p ≥ 0>) 		def s y rango unitario
+F=(s + 1) 
+-------------------------------------------------------------
+con M : Int, A : array[0, M ) of Int
+var r : Int
+{M ≥ 1}
+S'
+{r = <N p, q : 0 ≤ p < q < m : A.p ∗ A.q ≥ 0> ^ 1<=m<=M ^ s=<N p: 0 ≤ p < m : A.p ≥ 0>}
+do M/=m -> r,m,s:=r + (s * A.m),m+1,s+1
+{r = <N p, q : 0 ≤ p < q < M : A.p ∗ A.q ≥ 0>}
+-------------------------------------------------------------
+inicializacion:{M ≥ 1}S'{r = <N p, q : 0 ≤ p < q < m : A.p ∗ A.q ≥ 0> ^ 1<=m<=M ^ s=<N p: 0 ≤ p < m : A.p ≥ 0>} 		propongo S' : r,m,s:=0,1,1 . def wp y asig
+M ≥ 1 -> 0 = <N p, q : 0 ≤ p < q < 1 : A.p ∗ A.q ≥ 0> ^ 1<=1<=M ^ 1=<N p: 0 ≤ p < 1 : A.p ≥ 0> 		rango vacio,leibniz y rango unitario
+M ≥ 1 -> 0 = 0 ^ True ^ 1=1 	logica
+True
+-------------------------------------------------------------
+con M : Int, A : array[0, M ) of Int
+var r : Int
+{M ≥ 1}
+r,m,s:=0,1,1
+{r = <N p, q : 0 ≤ p < q < m : A.p ∗ A.q ≥ 0> ^ 1<=m<=M ^ s=<N p: 0 ≤ p < m : A.p ≥ 0>}
+do M/=m -> r,m,s:=r + (s * A.m),m+1,s+1
+{r = <N p, q : 0 ≤ p < q < M : A.p ∗ A.q ≥ 0>}
+-------------------------------------------------------------
+var a:r = <N p, q : 0 ≤ p < q < m : A.p ∗ A.q ≥ 0> ^ 1<=m<=M ^ s=<N p: 0 ≤ p < m : A.p ≥ 0> ^ M/=m -> v>=0 		propongo v: M-m
+<N p, q : 0 ≤ p < q < m : A.p ∗ A.q ≥ 0> ^ 1<=m<=M ^ s=<N p: 0 ≤ p < m : A.p ≥ 0> ^ M/=m -> M-m>=0 	aritmetica
+True
+var b:{<N p, q : 0 ≤ p < q < m : A.p ∗ A.q ≥ 0> ^ 1<=m<=M ^ s=<N p: 0 ≤ p < m : A.p ≥ 0> ^ M/=m ^ M-m=A}r,m,s:=r + (s * A.m),m+1,s+1{M-m<A} 		def wp asig
+M-m-1<A 	arit y def A
+A<A+1 	arit
+True
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

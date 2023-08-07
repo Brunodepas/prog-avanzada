@@ -123,3 +123,11 @@ ej13 a b c
  | ((b*b) - 4 * a * c) > 0 = 2
  | ((b*b) - 4 * a * c) == 0 = 1
  | otherwise = 0
+
+fll :: (b->a->b) -> b -> [a] -> b
+fll f z [] = z
+fll f z (x:xs) = fll f (f z x) xs
+
+flr :: (a->b->b) -> b -> [a] -> b
+flr f z [] = z
+flr f z (x:xs) = f x (flr f z xs)
